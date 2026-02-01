@@ -81,7 +81,7 @@ function App() {
     <div>
       <header className="nav">
         <div className="container nav-inner">
-          <div className="brand">VINTAGE YARD</div>
+          <div className="brand">WEFT Clothing</div>
           <nav className="nav-links">
             <button className="btn" onClick={() => setPage("shop")}>
               Shop

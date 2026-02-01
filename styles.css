@@ -35,6 +35,7 @@ a {
 }
 
 .nav {
+  padding: 0 15px;
   position: sticky;
   top: 0;
   z-index: 10;
