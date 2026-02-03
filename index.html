@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vintage Yard — Thrift Jackets</title>
+    <title>WEFT.CLOTHING</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="nav">
       <div class="container nav-inner">
-        <div class="brand">VINTAGE YARD</div>
+        <div class="brand">WEFT Clothing</div>
         <nav class="nav-links">
-          <a href="#story">Story</a>
+          <!-- <a href="#story">Story</a>
           <a href="#collection">Collection</a>
           <a href="#process">Process</a>
-          <a href="#visit">Visit</a>
+          <a href="#visit">Visit</a> -->
         </nav>
         <div class="nav-actions">
           <button class="btn">Search</button>
@@ -35,7 +35,6 @@
           </p>
           <div class="hero-actions">
             <button class="btn btn-accent">Explore the Archive</button>
-            <button class="btn">Book a Fitting</button>
           </div>
           <div class="hero-stats">
             <div>
@@ -68,49 +67,12 @@
 
       <section class="section container" id="collection">
         <div class="section-header">
-          <h2>Neon jacket archive</h2>
+          <h2>Jacket archive</h2>
           <p class="subtle">
-            Electric accents, glossy textures, and rare outerwear drops.
+            Timeless vintage, premium thrift, and hand-picked classics.
           </p>
         </div>
-        <div class="mosaic">
-          <div class="mosaic-item tall">
-            <img
-              src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1000&q=80"
-              alt="Vintage denim jacket"
-            />
-          </div>
-          <div class="mosaic-item">
-            <img
-              src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1000&q=80"
-              alt="Vintage leather jacket"
-            />
-          </div>
-          <div class="mosaic-item">
-            <img
-              src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=80"
-              alt="Corduroy vintage jacket"
-            />
-          </div>
-          <div class="mosaic-item wide">
-            <img
-              src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1200&q=80"
-              alt="Utility jacket"
-            />
-          </div>
-          <div class="mosaic-item">
-            <img
-              src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=1000&q=80"
-              alt="Vintage jacket detail"
-            />
-          </div>
-          <div class="mosaic-item">
-            <img
-              src="https://images.unsplash.com/photo-1503341733017-1901578f9f1e?auto=format&fit=crop&w=1000&q=80"
-              alt="Vintage jacket texture"
-            />
-          </div>
-        </div>
+        <div class="mosaic" id="mosaic-container"></div>
       </section>
 
       <section class="section container" id="process">
@@ -145,13 +107,14 @@
       <section class="section container" id="visit">
         <div class="cta">
           <div>
-            <h2>Visit the studio</h2>
+            <h2>Visit the page</h2>
             <p>
-              Try on the archive, request sizing help, and reserve private
-              fittings.
+              The style continues on social — visit our Instagram for more.
             </p>
           </div>
-          <button class="btn btn-accent">Book a Visit</button>
+          <a href="https://www.instagram.com/weft.clothing" class="btn btn-accent" target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
         </div>
       </section>
     </main>
@@ -163,5 +126,28 @@
       </div>
     </footer>
   </body>
+  <script>
+    const folderPath = './images/'; 
+    const imageCount = 6;         
+    
+    const container = document.getElementById('mosaic-container');
+    let html = '';
+  
+    for (let i = 1; i <= imageCount; i++) {
+      // Logic to assign 'tall' or 'wide' classes for the mosaic layout
+      let cssClass = 'mosaic-item';
+      if (i % 5 === 0) cssClass += ' wide';      
+      else if (i % 7 === 0) cssClass += ' tall'; 
+  
+      // Add the image to the HTML string
+      html += `
+        <div class="${cssClass}">
+          <img src="${folderPath}${i}.jpg" alt="Weft Clothing Item ${i}" loading="lazy">
+        </div>
+      `;
+    }
+  
+    container.innerHTML = html;
+  </script>
 </html>
 
