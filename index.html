@@ -3,15 +3,151 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WEFT•CLOTHING</title>
+    <title>WEFT.CLOTHING</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel" src="./app.js"></script>
+    <header class="nav">
+      <div class="container nav-inner">
+        <div class="brand">WEFT Clothing</div>
+        <nav class="nav-links">
+          <!-- <a href="#story">Story</a>
+          <a href="#collection">Collection</a>
+          <a href="#process">Process</a>
+          <a href="#visit">Visit</a> -->
+        </nav>
+        <div class="nav-actions">
+          <button class="btn">Search</button>
+          <button class="btn btn-accent">Shop Now</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero container" id="story">
+        <div class="hero-text">
+          <p class="tag">Thrifted • Restored • Reworn</p>
+          <h1>Vintage jackets &amp; jeans, curated for modern quiet.</h1>
+          <p class="lead">
+            A minimal archive of timeless outerwear and denim. Each piece is
+            cleaned, repaired, and softened to feel lived-in from the first
+            wear.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-accent">Explore the Archive</button>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <span class="stat">140+</span>
+              <span class="stat-label">Restored pieces</span>
+            </div>
+            <div>
+              <span class="stat">48h</span>
+              <span class="stat-label">New drop cadence</span>
+            </div>
+            <div>
+              <span class="stat">4.9★</span>
+              <span class="stat-label">Collector love</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-media">
+          <div class="hero-card">
+            <img
+              src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80"
+              alt="Vintage corduroy jacket"
+            />
+            <div class="hero-card-info">
+              <span>Corduroy Work Jacket</span>
+              <span class="accent">One of one</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section container" id="collection">
+        <div class="section-header">
+          <h2>Jacket archive</h2>
+          <p class="subtle">
+            Timeless vintage, premium thrift, and hand-picked classics.
+          </p>
+        </div>
+        <div class="mosaic" id="mosaic-container"></div>
+      </section>
+
+      <section class="section container" id="process">
+        <div class="split">
+          <div>
+            <h2>Quiet craftsmanship</h2>
+            <p class="lead">
+              We restore with restraint: reinforce seams, revive denim, and keep
+              every original character mark intact.
+            </p>
+          </div>
+          <div class="split-list">
+            <div>
+              <span class="accent">01</span>
+              <h3>Source</h3>
+              <p>Estate finds and dealer archives, only the best.</p>
+            </div>
+            <div>
+              <span class="accent">02</span>
+              <h3>Restore</h3>
+              <p>Repair, wash, and reshape for a soft lived-in feel.</p>
+            </div>
+            <div>
+              <span class="accent">03</span>
+              <h3>Refine</h3>
+              <p>Minimal silhouettes with modern proportions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section container" id="visit">
+        <div class="cta">
+          <div>
+            <h2>Visit the page</h2>
+            <p>
+              The style continues on social — visit our Instagram for more.
+            </p>
+          </div>
+          <a href="https://www.instagram.com/weft.clothing" class="btn btn-accent" target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <span>© 2026 Vintage Yard</span>
+        <span>Thrifted. Restored. Reworn.</span>
+      </div>
+    </footer>
   </body>
+  <script>
+    const folderPath = './images/'; 
+    const imageCount = 6;         
+    
+    const container = document.getElementById('mosaic-container');
+    let html = '';
+  
+    for (let i = 1; i <= imageCount; i++) {
+      // Logic to assign 'tall' or 'wide' classes for the mosaic layout
+      let cssClass = 'mosaic-item';
+      if (i % 5 === 0) cssClass += ' wide';      
+      else if (i % 7 === 0) cssClass += ' tall'; 
+  
+      // Add the image to the HTML string
+      html += `
+        <div class="${cssClass}">
+          <img src="${folderPath}${i}.jpg" alt="Weft Clothing Item ${i}" loading="lazy">
+        </div>
+      `;
+    }
+  
+    container.innerHTML = html;
+  </script>
 </html>
 
