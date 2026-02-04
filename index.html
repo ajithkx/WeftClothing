@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WEFT.CLOTHING</title>
     <link rel="stylesheet" href="./styles.css" />
-    <link rel="icon" type="image/png" href="images/favicon.png">
-    <link rel="apple-touch-icon" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="images/logo/favicon.png">
+    <link rel="apple-touch-icon" href="images/logo/favicon.png">
   </head>
   <body>
     <header class="nav">
@@ -19,8 +19,11 @@
           <a href="#visit">Visit</a> -->
         </nav>
         <div class="nav-actions">
-          <button class="btn">Search</button>
-          <button class="btn btn-accent">Shop Now</button>
+          <!-- <button class="btn">Search</button> -->
+          <a href="https://www.instagram.com/weft.clothing" class="btn btn-accent" target="_blank" rel="noopener noreferrer">
+            Shop Now
+          </a>
+          <!-- <button class="btn btn-accent">Shop Now</button> -->
         </div>
       </div>
     </header>
@@ -56,12 +59,12 @@
         <div class="hero-media">
           <div class="hero-card">
             <img
-              src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80"
+              src="images/logo/logo.jpg"
               alt="Vintage corduroy jacket"
             />
             <div class="hero-card-info">
-              <span>Corduroy Work Jacket</span>
-              <span class="accent">One of one</span>
+              <span>Wear the past. Own the future.</span>
+              <span class="accent">CURATED VINTAGE</span>
             </div>
           </div>
         </div>
@@ -129,27 +132,45 @@
     </footer>
   </body>
   <script>
-    const folderPath = './images/'; 
-    const imageCount = 6;         
-    
+    // CONFIGURATION
+    const folderPath = './images/';
     const container = document.getElementById('mosaic-container');
-    let html = '';
   
-    for (let i = 1; i <= imageCount; i++) {
-      // Logic to assign 'tall' or 'wide' classes for the mosaic layout
-      let cssClass = 'mosaic-item';
-      if (i % 5 === 0) cssClass += ' wide';      
-      else if (i % 7 === 0) cssClass += ' tall'; 
+    async function loadImages() {
+      let i = 1;
+      let exists = true;
   
-      // Add the image to the HTML string
-      html += `
-        <div class="${cssClass}">
-          <img src="${folderPath}${i}.jpg" alt="Weft Clothing Item ${i}" loading="lazy">
-        </div>
-      `;
+      // Start the loop
+      while (exists) {
+        const filename = `${folderPath}${i}.jpg`;
+  
+        try {
+          const response = await fetch(filename, { method: 'HEAD' });
+  
+          if (response.ok) {
+            let cssClass = 'mosaic-item';
+            if (i % 5 === 0) cssClass += ' wide';
+            else if (i % 7 === 0) cssClass += ' tall';
+  
+            const html = `
+              <div class="${cssClass}">
+                <img src="${filename}" alt="Weft Clothing Item ${i}" loading="lazy">
+              </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', html);
+            
+            i++;
+          } else {
+            // 3. If 404 (not found), stop the loop
+            exists = false;
+          }
+        } catch (error) {
+          exists = false;
+        }
+      }
     }
-  
-    container.innerHTML = html;
+    loadImages();
   </script>
 </html>
 
