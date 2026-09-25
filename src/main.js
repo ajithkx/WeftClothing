@@ -2,7 +2,8 @@ import './style.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { IG, pieces, details, process, reelImages } from './data.js';
+import { pieces, details, reelImages } from './data.js';
+import { pad2, railHTML, deckHTML, stepsHTML, tapeHTML } from './render.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,79 +17,20 @@ $('#year').textContent = new Date().getFullYear();
 
 /* ---------------- render content ---------------- */
 
-const arrow = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-const sep = '<span class="tape-sep" aria-hidden="true">/</span>';
+// Rail, deck, steps and tapes are pre-rendered into index.html at build time (vite.config.js),
+// so crawlers and no-JS visitors see them. Only fill any that are still empty (e.g. a stripped page).
+const fill = (el, html) => { if (!el.firstElementChild) el.innerHTML = html; };
+fill($('#rail-track'), railHTML());
+fill($('#deck-stage'), deckHTML());
+fill($('#steps'), stepsHTML());
+$$('.tape-track').forEach((track) => fill(track, tapeHTML(track.dataset.dir)));
 
-$('#rail-track').innerHTML =
-  pieces
-    .map(
-      (p) => `
-  <article class="pc">
-    <div class="pc-card">
-      <img src="${p.src}" srcset="${p.sm} 600w, ${p.src} 1200w" sizes="(max-width: 900px) 76vw, 360px" alt="${p.name}, ${p.note.toLowerCase()} ${p.type.toLowerCase()} laid flat" loading="lazy" />
-      <div class="pc-tags">
-        <span class="chip ${p.hot ? 'chip-red' : ''}">1 of 1</span>
-      </div>
-      <a class="pc-cta" href="${IG}" target="_blank" rel="noopener" aria-label="DM to claim the ${p.name}">
-        DM to claim <span class="knob">${arrow}</span>
-      </a>
-    </div>
-    <div class="pc-info">
-      <div><div class="pc-name">${p.name}</div><div class="pc-sub">${p.note}</div></div>
-      <span class="pc-price">DM for price</span>
-    </div>
-  </article>`
-    )
-    .join('') +
-  `
-  <article class="pc pc-end">
-    <a class="pc-card" href="${IG}" target="_blank" rel="noopener">
-      <span class="chip self-start">@shopweft</span>
-      <span class="display">More on<br/>the gram.</span>
-      <span class="pill pill-black self-start">Open Instagram ${arrow}</span>
-    </a>
-  </article>`;
-
-const pad2 = (n) => String(n).padStart(2, '0');
-const tilt = [-7, 5, -3, 8, -5, 3];
-
-$('#deck-stage').innerHTML = details
-  .map(
-    (d, i) => `
-  <figure class="deck-card" style="--r:${tilt[i % tilt.length]}deg; z-index:${details.length - i}">
-    <img src="${d.src}" srcset="${d.sm} 600w, ${d.src} 1200w" sizes="(max-width: 900px) 70vw, 34vw" alt="Close-up of the ${d.label.toLowerCase()}" loading="lazy" />
-    <figcaption class="deck-tag font-mono" aria-hidden="true">${pad2(i + 1)} / ${d.label}</figcaption>
-  </figure>`
-  )
-  .join('');
 $('#deck-ghost').textContent = details[0].label;
 $('.deck-of').textContent = `/${pad2(details.length)}`;
 $('#rail-count').textContent = `01 / ${pad2(pieces.length)}`;
 $('#deck-name').textContent = details[0].label;
 $('#deck-sub').textContent = details[0].sub;
 if (reduced) $('.deck').classList.add('is-static');
-
-
-$('#steps').innerHTML = process
-  .map(
-    (s) => `
-  <li class="step" data-img="${s.sm}">
-    <img class="step-img" src="${s.sm}" alt="" loading="lazy" />
-    <span class="step-word">${s.word}</span>
-    <p>${s.text}</p>
-  </li>`
-  )
-  .join('');
-
-const tapeWords = {
-  1: ['One of one', 'No restocks', 'DM to cop', 'Archive 01 live'],
-  '-1': ['Thrifted', 'Cleaned', 'Graded', 'Reworn', '90s sportswear'],
-};
-$$('.tape-track').forEach((track) => {
-  const words = tapeWords[track.dataset.dir];
-  const group = `<span class="tape-item">${words.map((w) => `<span>${w}</span>${sep}`).join('')}</span>`;
-  track.innerHTML = group.repeat(6);
-});
 
 /* ---------------- smooth scroll ---------------- */
 
@@ -193,16 +135,35 @@ function heroReady() {
     .then(() => true);
 }
 
+function showHeroFallback() {
+  document.documentElement.classList.add('no-webgl');
+  $('.hero-fallback').style.backgroundImage = `url(${desktop() ? pieces[0].src : pieces[0].sm})`;
+}
+
 async function initHero() {
-  if (!hasWebGL() || constrained) {
-    document.documentElement.classList.add('no-webgl');
-    $('.hero-fallback').style.backgroundImage = `url(${desktop() ? pieces[0].src : pieces[0].sm})`;
+  if (!hasWebGL() || constrained) return showHeroFallback();
+  try {
+    const deferred = await heroReady();
+    // Phones: show the photo while the scene chunk loads, then cross-fade to the canvas
+    if (deferred) showHeroFallback();
+    const { createHero } = await import('./scene.js');
+    hero = createHero(canvas, { images: reelImages, mode: sceneMode, reducedMotion: reduced });
+    if (deferred) {
+      const fb = $('.hero-fallback');
+      const finish = () => document.documentElement.classList.remove('no-webgl');
+      if (reduced) finish();
+      else {
+        gsap.from(canvas, { opacity: 0, duration: 0.9, ease: 'power2.out' });
+        gsap.to(fb, { opacity: 0, duration: 0.9, ease: 'power2.out', onComplete: () => { finish(); gsap.set(fb, { clearProps: 'opacity' }); } });
+      }
+    }
+  } catch (err) {
+    // Scene chunk blocked or WebGL init failed: fall back to the photo
+    console.warn('Hero scene failed, using photo fallback', err);
+    hero = null;
+    showHeroFallback();
     return;
   }
-  const deferred = await heroReady();
-  const { createHero } = await import('./scene.js');
-  if (deferred && !reduced) gsap.from(canvas, { opacity: 0, duration: 0.9, ease: 'power2.out' });
-  hero = createHero(canvas, { images: reelImages, mode: sceneMode, reducedMotion: reduced });
 
   const panel = $('#hero-panel');
   panel.addEventListener('pointermove', (e) => {
