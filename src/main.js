@@ -106,11 +106,34 @@ $$('a[href^="#"]').forEach((a) =>
     if (target === null) return;
     e.preventDefault();
     closeMenu();
-    if (lenis) lenis.scrollTo(target, { duration: 1.4 });
-    else if (target === 0) window.scrollTo(0, 0);
-    else target.scrollIntoView();
+    goTo(target);
   })
 );
+
+function goTo(target) {
+  if (lenis) lenis.scrollTo(target, { duration: 1.4 });
+  else if (target === 0) window.scrollTo(0, 0);
+  else target.scrollIntoView();
+}
+
+// Floating buttons: back to top, and skip out of the pinned scroll sections
+const toTop = $('#to-top');
+const skipBtn = $('#skip-btn');
+const setOn = (el, on) => {
+  el.classList.toggle('is-on', on);
+  el.tabIndex = on ? 0 : -1;
+};
+let skipTarget = null;
+function setSkip(active, sel) {
+  if (active) skipTarget = sel;
+  else if (skipTarget === sel) skipTarget = null;
+  setOn(skipBtn, !!skipTarget);
+}
+toTop.addEventListener('click', () => goTo(0));
+skipBtn.addEventListener('click', () => skipTarget && goTo($(skipTarget)));
+const syncTop = () => setOn(toTop, scrollY > innerHeight * 1.2);
+addEventListener('scroll', syncTop, { passive: true });
+syncTop();
 
 /* ---------------- hero 3D ---------------- */
 
@@ -293,6 +316,12 @@ function choreography() {
     scrollTrigger: { trigger: '.drop', start: 'top 60%' },
   });
 
+  // Footer wordmark letters rise out of the baseline rule
+  gsap.from('.fw-letters span', {
+    yPercent: 100, stagger: 0.07, duration: 1.2, ease: 'expo.out',
+    scrollTrigger: { trigger: '.footer-word', start: 'top 95%' },
+  });
+
   // Nav hides on scroll down, returns on scroll up
   const nav = $('#nav');
   let lastY = 0;
@@ -324,6 +353,7 @@ function choreography() {
         pin: true,
         scrub: 0.8,
         invalidateOnRefresh: true,
+        onToggle: (st) => setSkip(st.isActive, '#details'),
         onUpdate: (st) => {
           bar.style.transform = `scaleX(${0.08 + st.progress * 0.92})`;
           const n = Math.min(pieces.length, 1 + Math.floor(st.progress * pieces.length));
@@ -344,6 +374,7 @@ function choreography() {
         }
       );
     });
+    return () => setSkip(false, '#details');
   });
   mm.add('(max-width: 900px)', () => {
     const vp = $('.rail-viewport');
@@ -394,6 +425,7 @@ function choreography() {
         scrub: 0.7,
         snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, ease: 'power2.inOut' },
         invalidateOnRefresh: true,
+        onToggle: (st) => setSkip(st.isActive, '#process'),
         onUpdate: (st) => show(Math.min(n - 1, Math.round(st.progress * (n - 1)))),
       },
     });
