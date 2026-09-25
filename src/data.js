@@ -18,12 +18,12 @@ export const pieces = [
 
 // Detail close-ups for the "Up close" bento.
 export const details = [
-  { ...img(9), label: 'Macron zip pull', sub: 'Clean metal hardware', cls: 'md:col-span-2 md:row-span-2' },
-  { ...img(4), label: 'Legea sleeve print', sub: 'Bold sleeve hit', cls: '' },
-  { ...img(7), label: 'Sun Mountain label', sub: 'Loud orange lining', cls: '' },
-  { ...img(6), label: 'Chest embroidery', sub: 'Stitched logo', cls: 'md:col-span-2' },
-  { ...img(14), label: 'Team crest', sub: 'Macron team kit', cls: '' },
-  { ...img(19), label: 'Inner label', sub: 'Sharp contrast collar', cls: '' },
+  { ...img(9), label: 'Macron zip pull', sub: 'Clean metal hardware' },
+  { ...img(4), label: 'Legea sleeve print', sub: 'Bold sleeve hit' },
+  { ...img(7), label: 'Sun Mountain label', sub: 'Loud orange lining' },
+  { ...img(6), label: 'Chest embroidery', sub: 'Stitched logo' },
+  { ...img(14), label: 'Team crest', sub: 'Macron team kit' },
+  { ...img(19), label: 'Inner label', sub: 'Sharp contrast collar' },
 ];
 
 export const process = [

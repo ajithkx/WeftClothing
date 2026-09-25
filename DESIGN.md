@@ -15,8 +15,14 @@ Source of truth: `src/style.css` (`@theme` tokens + components), `src/scene.js` 
 | `mute` | `#8F97A3` | Labels, meta (AA on `bg`) |
 | `blue` | `#3D7BFF` | Piping: blue tape, process hover fill, end card, glow text |
 | `red` | `#FF2E4D` | Primary action colour: all "DM" pills, sticker, drop section field, hot "1 of 1" chip |
+| `red-hi` | `#FF4762` | Hover lift on red pills |
+| `on-red` | `#1A0006` | Every text label on red (pills, CTA hover, skip hover, hot chip, drop body copy, red tape, selection). 5.49:1 on `red`, 6.05:1 on `red-hi` |
 | `cyan` | `#4FD6E8` | Neon only: focus ring, rail progress, tile captions, price label, card hover edge |
-| `mint` | `#B9E8D8` | Reserved; unused so far |
+| `blue-pale` | `#CFE0FF` | Text colour of `.glow-blue` (blue glow headline words) |
+| `blue-soft` | `#8FB4FF` | `.glow-blue` on `.text-blue`, footer wordmark outline (at 80% via `color-mix`), deck ghost outline (16%) |
+| `navy` | `#0F1A36` | Core of the hero panel radial gradient only |
+
+Contrast: white on `red` is only 3.65:1, so small text on red is never white; it uses `on-red`. White stays only where it is large display text (drop headline, sticker "1/1", which pass the 3:1 large-text rule). Darkening the red instead was rejected: white needs `#EE0023` to reach 4.5:1, and that red falls to 4.44:1 as text on `bg`. Chips (`.chip`) sit on near-opaque `bg` at 80% so `ink` text holds AA over any photo or the blue end card (at least 10:1).
 
 Rules: red means "act" (every buy path). Blue carries identity and big fields. Cyan never fills anything bigger than a thin line or a dot. Neon = `text-shadow`/`box-shadow` glow, never gradient text.
 
@@ -46,7 +52,7 @@ No eyebrows/kickers above headings. The only small label in the hero is the live
 - **Scene switch**: compact pill segmented radio (`Reel` / `Cloth`), sliding ink thumb with cyan glow; arrow keys switch.
 - **Sticker**: rotating circular text around a red "1/1" disc.
 - **Tapes**: two full-bleed crossing bands (red +3°, blue -3.5°) with display caps separated by a faded slash; speed reacts to scroll velocity.
-- **Product card** (`.pc`): 3:4 photo, "1 of 1" chip (red when hot), slide-up "DM to claim" bar, name + mono type/colour + cyan "DM for price". 3D tilt + spotlight on fine pointers. Rail ends with a blue "More on the gram" card.
+- **Product card** (`.pc`): 3:4 photo, "1 of 1" chip (`.chip`: mono caps pill on dark glass; `.chip-red` when hot: red fill, `on-red` text, red glow), slide-up "DM to claim" bar, name + mono type/colour + cyan "DM for price". 3D tilt + spotlight on fine pointers. Rail ends with a blue "More on the gram" card.
 - **Overlap cards** (`.ocard`): light ink cards, rotated ±5°, overlapping a giant display word, parallax.
 - **Up close deck** (`.deck`): pinned section. Close-up photos stacked as a tilted deck of ink-bordered cards; each scroll step (snapped) flicks the top card off to alternating sides while the next straightens. Left column shows a big red counter (01/06), label and cyan mono caption; a giant outlined label sits behind. The deck leans toward the cursor on desktop.
 - **Steps**: full-width rows with giant display word; hover fills blue from bottom and a photo follows the cursor. Mobile shows inline thumbnails instead.
