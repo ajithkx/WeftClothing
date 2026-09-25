@@ -21,6 +21,9 @@ Source of truth: `src/style.css` (`@theme` tokens + components), `src/scene.js` 
 | `blue-pale` | `#CFE0FF` | Text colour of `.glow-blue` (blue glow headline words) |
 | `blue-soft` | `#8FB4FF` | `.glow-blue` on `.text-blue`, footer wordmark outline (at 80% via `color-mix`), deck ghost outline (16%) |
 | `navy` | `#0F1A36` | Core of the hero panel radial gradient only |
+| `white` | `#FFFFFF` | Only large display text and hairlines on red or blue (drop headline, sticker "1/1", blue end card and blue tape, knob, drop photo borders) and the `pill-black` hover |
+| `black` | `#000000` | `pill-black` hover fill only |
+| `red-shade` / `red-glow` / `red-dark` | `#5A0014` / `#780014` / `#3C000A` | Warm shadow tones inside the red drop panel (corner shade, headline shadow, photo shadow) |
 
 Contrast: white on `red` is only 3.65:1, so small text on red is never white; it uses `on-red`. White stays only where it is large display text (drop headline, sticker "1/1", which pass the 3:1 large-text rule). Darkening the red instead was rejected: white needs `#EE0023` to reach 4.5:1, and that red falls to 4.44:1 as text on `bg`. Chips (`.chip`) sit on near-opaque `bg` at 80% so `ink` text holds AA over any photo or the blue end card (at least 10:1).
 
