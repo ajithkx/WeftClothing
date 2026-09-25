@@ -34,7 +34,7 @@ Loader, nav, 3D hero (Reel/Cloth switch), crossing tapes, overlap cards, product
 - Floating back-to-top button (after the hero), and a Skip button shown only while the rail or deck is pinned.
 - Footer: giant outlined "WEFT" text wordmark (rises in on scroll, fills on hover) replaces the blurry logo image.
 - Nav logo is plain text. Reel/Cloth switch made smaller.
-- Splash logo `public/img/weft-mark.png` rebuilt at 3x from `images/logo/weft-logo-dark-bg.png`.
+- Splash logo is now `public/img/weft-mark.webp` (1260x338, about 20 kB, flattened onto `#07080b`), made from the earlier 3x PNG rebuild of `images/logo/weft-logo-dark-bg.png`. Icons: `public/favicon-32.png` and `public/apple-touch-icon.png` (180x180), cut from the old 500px `favicon.png`.
 - Old `images/*.jpg` and old logo/favicon removed (still in git history).
 
 ## Open items

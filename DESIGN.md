@@ -71,7 +71,7 @@ Easing: `expo.out` / `cubic-bezier(.16,1,.3,1)` for entrances, `cubic-bezier(.7,
 
 ## Imagery
 
-Product photos are real flat-lays, shipped as `public/img/{n}.webp` (1200w) and `{n}-sm.webp` (600w). Detail close-ups go in the Up close deck. Logo: `public/img/weft-mark.png` (wordmark, transparent, used by the loader only) and `weft-logo.png` (with CLOTHING, currently unused): use on dark only. Nav and footer use text.
+Product photos are real flat-lays, shipped as `public/img/{n}.webp` (1200w) and `{n}-sm.webp` (600w). Detail close-ups go in the Up close deck. Logo: `public/img/weft-mark.webp` (wordmark, 1260x338 so it stays sharp at 3x, flattened onto `--color-bg` `#07080b`, used by the loader only) and `weft-logo.png` (with CLOTHING, currently unused): use on dark only. Nav and footer use text.
 
 ## Voice rules
 
