@@ -427,8 +427,9 @@ body::after {
 .rail-meta { width: min(360px, 100%); display: flex; flex-direction: column; gap: 16px; color: var(--color-soft); line-height: 1.55; }
 .rail-progress { height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .rail-progress span { display: block; height: 100%; width: 100%; background: var(--color-cyan); transform-origin: left; transform: scaleX(0.08); box-shadow: 0 0 10px var(--color-cyan); }
+.rail-viewport { margin-block: -10px; } /* room for the focus ring (2px offset + 2px line + 6px halo) inside the clip box; cancelled by the track padding */
 .rail-viewport { overflow: clip; } /* clip, not hidden: focus must not be able to scroll it and desync the GSAP x */
-.rail-track { display: flex; gap: 20px; padding-inline: var(--gutter); width: max-content; } /* will-change is set from JS only while the rail is pinned */
+.rail-track { display: flex; gap: 20px; padding: 10px var(--gutter); width: max-content; } /* will-change is set from JS only while the rail is pinned */
 
 .pc {
   --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%; --ey: 0deg; --ez: 0deg; --sc: 1;

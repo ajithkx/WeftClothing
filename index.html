@@ -36,7 +36,7 @@
         addEventListener('unhandledrejection', unlock);
       })();
     </script>
-    <noscript><style>body.is-loading { overflow: visible !important; } #loader { display: none !important; }</style></noscript>
+    <noscript><style>body.is-loading { overflow: visible !important; } #loader { display: none !important; } #hero-canvas { display: none !important; } .hero-fallback { display: block !important; position: absolute; inset: 0; background: url(./img/13-sm.webp) 70% 40% / cover no-repeat; filter: brightness(0.55) saturate(1.1); } @media (min-width: 901px) { .hero-fallback { background-image: url(./img/13.webp); } }</style></noscript>
     <script type="module" src="/src/main.js"></script>
   </head>
   <body class="is-loading">
