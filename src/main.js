@@ -160,6 +160,8 @@ async function initHero() {
   } catch (err) {
     // Scene chunk blocked or WebGL init failed: fall back to the photo
     console.warn('Hero scene failed, using photo fallback', err);
+    // createHero may have returned before a later step threw: release its renderer/GL context
+    try { hero?.destroy?.(); } catch {}
     hero = null;
     showHeroFallback();
     return;
@@ -616,7 +618,6 @@ function closeMenu() {
   if (!menuOpen) return;
   menuOpen = false;
   menuBtn.setAttribute('aria-expanded', 'false');
-  menuBtn.setAttribute('aria-label', 'Open menu');
   menu.hidden = true;
   setBehindMenuInert(false);
   lenis?.start();
@@ -633,7 +634,6 @@ menuBtn.addEventListener('click', () => {
   menuOpen = true;
   menu.hidden = false;
   menuBtn.setAttribute('aria-expanded', 'true');
-  menuBtn.setAttribute('aria-label', 'Close menu');
   setBehindMenuInert(true);
   menuClose.focus();
   lenis?.stop();

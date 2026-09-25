@@ -35,6 +35,7 @@
 :root {
   --r: 32px;
   --line: rgb(242 244 243 / 0.1);
+  --focus-halo: 0 0 0 0 transparent; /* set on :focus-visible; components with their own box-shadow list it first so it composes */
   --gutter: clamp(16px, 3vw, 40px);
   color-scheme: dark;
 }
@@ -53,7 +54,7 @@ body {
 body.is-loading { overflow: hidden; }
 ::selection { background: var(--color-red); color: var(--color-on-red); }
 img { user-select: none; -webkit-user-drag: none; }
-:focus-visible { outline: 2px solid var(--color-cyan); outline-offset: 2px; border-radius: 6px; box-shadow: 0 0 0 6px var(--color-bg) !important; } /* two-tone: dark bands either side of the cyan (5.2:1 on red/blue, 18:1 on ink), cyan 11.5:1 on bg */
+:focus-visible { --focus-halo: 0 0 0 6px var(--color-bg); outline: 2px solid var(--color-cyan); outline-offset: 2px; border-radius: 6px; box-shadow: var(--focus-halo); } /* two-tone: dark bands either side of the cyan (5.2:1 on red/blue, 18:1 on ink), cyan 11.5:1 on bg */
 
 /* film grain */
 body::after {
@@ -100,7 +101,7 @@ body::after {
   color: transparent;
   -webkit-text-stroke: 1.5px var(--color-ink);
 }
-.glow-blue { color: var(--color-blue-pale); text-shadow: 0 0 18px rgb(61 123 255 / 0.55), 0 0 42px rgb(61 123 255 / 0.3); }
+.glow-blue { color: var(--color-blue-pale); text-shadow: 0 0 18px color-mix(in srgb, var(--color-blue) 55%, transparent), 0 0 42px color-mix(in srgb, var(--color-blue) 30%, transparent); }
 .text-blue.glow-blue { color: var(--color-blue-soft); }
 .lede { font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.6; color: var(--color-soft); text-wrap: pretty; }
 .lede strong { color: var(--color-ink); font-weight: 600; }
@@ -122,10 +123,10 @@ body::after {
 }
 .pill-lg { height: 58px; padding: 0 10px 0 26px; font-size: 16px; }
 .pill-lg:not(:has(.knob)) { padding: 0 26px; }
-.pill-red { background: var(--color-red); color: var(--color-on-red); box-shadow: 0 8px 28px -8px rgb(255 46 77 / 0.6); }
-.pill-red:hover { background: var(--color-red-hi); box-shadow: 0 10px 40px -6px rgb(255 46 77 / 0.75), 0 0 0 1px rgb(255 120 140 / 0.5) inset; }
-.pill-ghost { border: 1px solid rgb(242 244 243 / 0.28); color: var(--color-ink); }
-.pill-ghost:hover { border-color: var(--color-ink); background: rgb(242 244 243 / 0.06); }
+.pill-red { background: var(--color-red); color: var(--color-on-red); box-shadow: var(--focus-halo), 0 8px 28px -8px color-mix(in srgb, var(--color-red) 60%, transparent); }
+.pill-red:hover { background: var(--color-red-hi); box-shadow: var(--focus-halo), 0 10px 40px -6px color-mix(in srgb, var(--color-red) 75%, transparent), 0 0 0 1px rgb(255 120 140 / 0.5) inset; }
+.pill-ghost { border: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent); color: var(--color-ink); }
+.pill-ghost:hover { border-color: var(--color-ink); background: color-mix(in srgb, var(--color-ink) 6%, transparent); }
 .pill-black { background: var(--color-bg); color: var(--color-ink); }
 .pill-black:hover { background: var(--color-black); color: var(--color-white); }
 .knob {
@@ -150,13 +151,13 @@ body::after {
     background-color 0.3s, border-color 0.3s, box-shadow 0.4s;
 }
 .to-top { right: 20px; width: 48px; height: 48px; border-radius: 50%; }
-.to-top:hover { border-color: var(--color-cyan); box-shadow: 0 0 22px rgb(79 214 232 / 0.35); }
+.to-top:hover { border-color: var(--color-cyan); box-shadow: var(--focus-halo), 0 0 22px color-mix(in srgb, var(--color-cyan) 35%, transparent); }
 .to-top:hover .ico { animation: nudge-up 0.6s var(--ease-out-expo); }
 .skip-btn {
   left: 50%; translate: -50% 0; height: 44px; padding: 0 16px 0 20px; border-radius: 999px;
   font-weight: 600; font-size: 13px; letter-spacing: 0.04em;
 }
-.skip-btn:hover { background: var(--color-red); border-color: var(--color-red); color: var(--color-on-red); box-shadow: 0 10px 34px -8px rgb(255 46 77 / 0.7); }
+.skip-btn:hover { background: var(--color-red); border-color: var(--color-red); color: var(--color-on-red); box-shadow: var(--focus-halo), 0 10px 34px -8px color-mix(in srgb, var(--color-red) 70%, transparent); }
 .skip-btn.is-on .ico { animation: nudge-down 1.8s var(--ease-out-expo) infinite; }
 @keyframes nudge-down { 0%, 55%, 100% { transform: none; } 25% { transform: translateY(4px); } }
 @keyframes nudge-up { 40% { transform: translateY(-4px); } }
@@ -174,7 +175,7 @@ body::after {
 }
 .loader-inner { width: min(420px, 70vw); display: grid; gap: 22px; }
 .loader-mark { width: 100%; height: auto; opacity: 0; }
-.loader-thread { height: 2px; background: rgb(242 244 243 / 0.08); border-radius: 2px; overflow: hidden; }
+.loader-thread { height: 2px; background: color-mix(in srgb, var(--color-ink) 8%, transparent); border-radius: 2px; overflow: hidden; }
 .loader-thread span {
   display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0);
   background: linear-gradient(90deg, var(--color-blue), var(--color-cyan) 60%, var(--color-red));
@@ -250,9 +251,9 @@ body::after {
 .hero-shade {
   position: absolute; inset: 0; pointer-events: none;
   background:
-    linear-gradient(to top, rgb(7 8 11 / 0.94) 0%, rgb(7 8 11 / 0.55) 34%, rgb(7 8 11 / 0) 62%),
-    radial-gradient(60% 55% at 100% 100%, rgb(7 8 11 / 0.75), rgb(7 8 11 / 0) 70%),
-    linear-gradient(to right, rgb(7 8 11 / 0.6) 0%, rgb(7 8 11 / 0) 45%);
+    linear-gradient(to top, color-mix(in srgb, var(--color-bg) 94%, transparent) 0%, color-mix(in srgb, var(--color-bg) 55%, transparent) 34%, color-mix(in srgb, var(--color-bg) 0%, transparent) 62%),
+    radial-gradient(60% 55% at 100% 100%, color-mix(in srgb, var(--color-bg) 75%, transparent), color-mix(in srgb, var(--color-bg) 0%, transparent) 70%),
+    linear-gradient(to right, color-mix(in srgb, var(--color-bg) 60%, transparent) 0%, color-mix(in srgb, var(--color-bg) 0%, transparent) 45%);
 }
 .hero-copy {
   position: absolute; left: 28px; right: 28px; bottom: 34px;
@@ -300,7 +301,7 @@ body::after {
 .scene-switch-thumb {
   position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px);
   border-radius: 999px; background: var(--color-ink);
-  box-shadow: 0 0 20px rgb(79 214 232 / 0.35);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--color-cyan) 35%, transparent);
   transition: transform 0.55s var(--ease-out-expo);
 }
 .scene-switch[data-active='cloth'] .scene-switch-thumb { transform: translateX(100%); }
@@ -316,7 +317,7 @@ body::after {
   width: 76px; height: 76px; border-radius: 50%; background: var(--color-red); color: var(--color-white);
   display: grid; place-items: center; transform: rotate(-12deg);
   font-family: var(--font-display); font-style: italic; font-weight: 900; font-stretch: 78%; font-size: 30px;
-  box-shadow: 0 0 30px rgb(255 46 77 / 0.45);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--color-red) 45%, transparent);
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -346,7 +347,7 @@ body::after {
 .tape-red { background: var(--color-red); transform: translateY(-50%) rotate(3deg); }
 .tape-blue {
   background: var(--color-blue); transform: translateY(-50%) rotate(-3.5deg);
-  box-shadow: 0 0 40px rgb(61 123 255 / 0.35);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--color-blue) 35%, transparent);
 }
 .tape-track { display: flex; flex: none; white-space: nowrap; will-change: transform; }
 .tape-item {
@@ -374,7 +375,7 @@ body::after {
 .ocard {
   width: clamp(140px, 19vw, 280px); background: var(--color-ink); color: var(--color-bg);
   border-radius: 24px; padding: 8px 8px 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px 8px; align-items: baseline;
-  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8);
+  box-shadow: var(--focus-halo), 0 30px 60px -20px color-mix(in srgb, var(--color-black) 80%, transparent);
   transition: transform 0.6s var(--ease-out-expo);
 }
 .ocard:nth-child(1) { rotate: -5deg; }
@@ -427,12 +428,12 @@ body::after {
   transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s;
   box-shadow: 0 0 0 1px var(--line);
 }
-.pc:hover .pc-card { box-shadow: 0 0 0 1px rgb(79 214 232 / 0.5), 0 24px 60px -20px rgb(61 123 255 / 0.45); }
+.pc:hover .pc-card { box-shadow: var(--focus-halo), 0 0 0 1px color-mix(in srgb, var(--color-cyan) 50%, transparent), 0 24px 60px -20px color-mix(in srgb, var(--color-blue) 45%, transparent); }
 .pc-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease-out-expo), filter 0.6s; filter: brightness(0.92); }
 .pc:hover .pc-card img { transform: scale(1.06); filter: brightness(1); }
 .pc-card::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.4s;
-  background: radial-gradient(420px circle at var(--mx) var(--my), rgb(255 255 255 / 0.18), transparent 45%);
+  background: radial-gradient(420px circle at var(--mx) var(--my), color-mix(in srgb, var(--color-white) 18%, transparent), transparent 45%);
   mix-blend-mode: overlay;
 }
 .pc:hover .pc-card::after { opacity: 1; }
@@ -441,11 +442,11 @@ body::after {
 .chip {
   display: inline-flex; align-items: center; height: 26px; padding: 0 11px; border-radius: 999px;
   font: 600 10.5px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
-  color: var(--color-ink); background: rgb(7 8 11 / 0.88); border: 1px solid rgb(242 244 243 / 0.14);
+  color: var(--color-ink); background: color-mix(in srgb, var(--color-bg) 88%, transparent); border: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
 }
 .chip-red {
   color: var(--color-on-red); background: var(--color-red); border-color: transparent;
-  box-shadow: 0 0 18px rgb(255 46 77 / 0.5);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--color-red) 50%, transparent);
 }
 .pc-cta {
   position: absolute; left: 12px; right: 12px; bottom: 12px; height: 52px; border-radius: 16px;
@@ -464,7 +465,7 @@ body::after {
 .pc-end .pc-card {
   display: flex; flex-direction: column; justify-content: space-between; padding: 28px;
   background: var(--color-blue); color: var(--color-white);
-  box-shadow: 0 0 60px -10px rgb(61 123 255 / 0.6);
+  box-shadow: var(--focus-halo), 0 0 60px -10px color-mix(in srgb, var(--color-blue) 60%, transparent);
 }
 .pc-end .display { font-size: clamp(2.6rem, 3.6vw, 3.6rem); }
 
@@ -489,7 +490,7 @@ body::after {
 .deck-copy { display: flex; flex-direction: column; gap: 28px; }
 .deck-copy p { color: var(--color-soft); line-height: 1.6; font-size: clamp(1rem, 1.25vw, 1.2rem); max-width: 400px; text-wrap: pretty; }
 .deck-now { display: flex; align-items: flex-end; gap: 22px; padding-top: 22px; border-top: 1px solid var(--line); overflow: hidden; }
-.deck-count { font-size: clamp(4rem, 8vw, 7.5rem); line-height: 0.8; color: var(--color-red); text-shadow: 0 0 34px rgb(255 46 77 / 0.35); }
+.deck-count { font-size: clamp(4rem, 8vw, 7.5rem); line-height: 0.8; color: var(--color-red); text-shadow: 0 0 34px color-mix(in srgb, var(--color-red) 35%, transparent); }
 .deck-count > span { display: inline-block; }
 .deck-of { font-size: 0.32em; color: var(--color-mute); text-shadow: none; margin-left: 0.1em; }
 .deck-label { display: flex; flex-direction: column; gap: 6px; padding-bottom: 6px; }
@@ -501,7 +502,7 @@ body::after {
   position: absolute; inset: 0; margin: 0; border-radius: 28px; overflow: hidden;
   background: var(--color-raised); rotate: var(--r);
   border: 8px solid var(--color-ink);
-  box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.9), 0 0 0 1px rgb(255 255 255 / 0.06);
+  box-shadow: 0 40px 80px -30px color-mix(in srgb, var(--color-black) 90%, transparent), 0 0 0 1px color-mix(in srgb, var(--color-white) 6%, transparent);
 }
 .deck-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; }
 .deck-tag {
@@ -521,7 +522,7 @@ body::after {
   .deck-stage { height: auto; width: min(72vw, 330px, calc((100svh - 300px) * 0.75)); max-height: 100%; align-self: center; }
   .deck-card {
     border-width: 6px; border-radius: 22px; /* will-change is set from JS only while the deck is pinned */
-    box-shadow: 0 24px 40px -24px rgb(0 0 0 / 0.9); /* cheaper to repaint on phones */
+    box-shadow: 0 24px 40px -24px color-mix(in srgb, var(--color-black) 90%, transparent); /* cheaper to repaint on phones */
   }
   .deck-card img { border-radius: 16px; }
 }
@@ -559,7 +560,7 @@ body::after {
   position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none;
   width: 240px; aspect-ratio: 3 / 4; border-radius: 22px; overflow: hidden;
   opacity: 0; scale: 0.6; transition: opacity 0.3s, scale 0.5s var(--ease-out-expo);
-  box-shadow: 0 30px 60px -10px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.12);
+  box-shadow: 0 30px 60px -10px color-mix(in srgb, var(--color-black) 70%, transparent), 0 0 0 1px color-mix(in srgb, var(--color-white) 12%, transparent);
 }
 .step-float.on { opacity: 1; scale: 1; }
 .step-float img { width: 100%; height: 100%; object-fit: cover; }
@@ -581,7 +582,7 @@ body::after {
 }
 .drop::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(80% 70% at 85% 10%, rgb(255 255 255 / 0.18), transparent 60%),
+  background: radial-gradient(80% 70% at 85% 10%, color-mix(in srgb, var(--color-white) 18%, transparent), transparent 60%),
               radial-gradient(60% 60% at 0% 100%, color-mix(in srgb, var(--color-red-shade) 50%, transparent), transparent 70%);
 }
 .drop-copy { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 24px; max-width: 900px; }
@@ -632,9 +633,9 @@ body::after {
 .footer-word:hover .fw-letters { translate: 0 -0.04em; }
 .footer-word:hover .fw-letters span {
   color: var(--color-ink); -webkit-text-stroke-color: var(--color-ink);
-  text-shadow: 0 0 60px rgb(61 123 255 / 0.45);
+  text-shadow: 0 0 60px color-mix(in srgb, var(--color-blue) 45%, transparent);
 }
-.footer-word:hover .fw-letters span:last-child { color: var(--color-red); -webkit-text-stroke-color: var(--color-red); text-shadow: 0 0 60px rgb(255 46 77 / 0.45); }
+.footer-word:hover .fw-letters span:last-child { color: var(--color-red); -webkit-text-stroke-color: var(--color-red); text-shadow: 0 0 60px color-mix(in srgb, var(--color-red) 45%, transparent); }
 .fw-sub {
   display: block; text-align: right; margin-bottom: clamp(8px, 1.4vw, 20px);
   font-size: clamp(10px, 1vw, 13px); letter-spacing: 0.3em; text-transform: uppercase; font-style: normal; color: var(--color-mute);
