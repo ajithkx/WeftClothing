@@ -285,6 +285,8 @@ body::after {
   color: var(--color-mute); transition: color 0.3s; padding: 0 10px; min-height: 30px;
 }
 .scene-switch button[aria-checked='true'] { color: var(--color-bg); }
+/* 44px touch target without changing the 30px visual pill */
+.scene-switch button::before { content: ''; position: absolute; inset: -11px -3px -7px; } /* bottom edge is clipped by the hero panel, so grow upward */
 .scene-switch-thumb {
   position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px);
   border-radius: 999px; background: var(--color-ink);
@@ -392,7 +394,7 @@ body::after {
 .rail-meta { width: min(360px, 100%); display: flex; flex-direction: column; gap: 16px; color: var(--color-soft); line-height: 1.55; }
 .rail-progress { height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .rail-progress span { display: block; height: 100%; width: 100%; background: var(--color-cyan); transform-origin: left; transform: scaleX(0.08); box-shadow: 0 0 10px var(--color-cyan); }
-.rail-viewport { overflow: hidden; }
+.rail-viewport { overflow: clip; } /* clip, not hidden: focus must not be able to scroll it and desync the GSAP x */
 .rail-track { display: flex; gap: 20px; padding-inline: var(--gutter); width: max-content; will-change: transform; }
 
 .pc {
@@ -501,7 +503,7 @@ body::after {
   .deck-copy p { display: none; }
   .deck-now { padding-top: 12px; gap: 14px; }
   .deck-count { font-size: 3.4rem; }
-  .deck-stage { height: auto; width: min(72vw, 330px); max-height: 100%; align-self: center; }
+  .deck-stage { height: auto; width: min(72vw, 330px, calc((100svh - 300px) * 0.75)); max-height: 100%; align-self: center; }
   .deck-card {
     border-width: 6px; border-radius: 22px; will-change: transform, opacity;
     box-shadow: 0 24px 40px -24px rgb(0 0 0 / 0.9); /* cheaper to repaint on phones */
@@ -624,6 +626,23 @@ body::after {
 
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+  /* keep state feedback (colour, fades, shadows); drop anything that moves */
+  *, *::before, *::after {
+    animation: none !important;
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke,
+      -webkit-text-stroke-color, opacity, box-shadow, text-shadow, filter !important;
+  }
   body::after { display: none; }
+  /* process row fill fades in instead of wiping up */
+  .step::before { transform: none; opacity: 0; transition: opacity 0.3s; }
+  @media (hover: hover) and (min-width: 901px) {
+    .step:hover::before { opacity: 1; }
+    .step:hover .step-word { transform: none; }
+  }
+}
+/* reduced motion on desktop: no pinned rail, so scroll it natively like the phone layout */
+@media (prefers-reduced-motion: reduce) and (min-width: 901px) {
+  .rail-viewport { overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: var(--gutter); }
+  .pc { scroll-snap-align: start; }
+  .pc-cta { transform: none; }
 }
