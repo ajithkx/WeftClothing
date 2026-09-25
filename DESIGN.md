@@ -51,7 +51,7 @@ No eyebrows/kickers above headings. The only small label in the hero is the live
 ## Components
 
 - **Pills**: `.pill` 44px; `.pill-lg` 58px. `.pill-red` (primary, soft red glow), `.pill-ghost` (hairline), `.pill-black` (on red). Optional `.knob` circle with arrow that rotates -45° on hover. `.magnetic` pulls toward cursor.
-- **Nav**: floating rounded bar, blurred raised bg, hides on scroll down. Logo is text only ("WEFT" in display type plus small mono "CLOTHING", cyan on hover). Mobile: logo + IG icon pill + two-line menu button → full-screen menu of display-type links alternating solid/outline.
+- **Nav**: floating rounded bar, near-solid raised bg (no backdrop blur, it re-sampled the WebGL hero every frame), hides on scroll down. Logo is text only ("WEFT" in display type plus small mono "CLOTHING", cyan on hover). Mobile: logo + IG icon pill + two-line menu button → full-screen menu of display-type links alternating solid/outline.
 - **Footer wordmark** (`.footer-word`): full-width outlined "WEFT" in display type sinking into a hairline; letters rise in on scroll, fill ink (T in red) on hover; filled by default on touch.
 - **Floating buttons**: round back-to-top (bottom right, after the hero) and a "Skip" pill (bottom centre) shown only while the rail or Up close deck is pinned.
 - **Scene switch**: compact pill segmented radio (`Reel` / `Cloth`), sliding ink thumb with cyan glow; arrow keys switch.
