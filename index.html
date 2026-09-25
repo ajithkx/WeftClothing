@@ -9,8 +9,8 @@
     <meta property="og:title" content="WEFT Clothing Archive 01" />
     <meta property="og:description" content="One-of-one thrifted jackets. DM us on Instagram to buy." />
     <meta property="og:image" content="./img/13.webp" />
-    <link rel="icon" type="image/png" href="./favicon.png" />
-    <link rel="apple-touch-icon" href="./favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
     <script type="module" src="/src/main.js"></script>
   </head>
   <body class="is-loading">
@@ -27,7 +27,7 @@
     <!-- LOADER -->
     <div id="loader" class="loader" aria-hidden="true">
       <div class="loader-inner">
-        <img src="./img/weft-mark.png" alt="" class="loader-mark" width="1571" height="422" />
+        <img src="./img/weft-mark.webp" alt="" class="loader-mark" width="1260" height="338" />
         <div class="loader-thread"><span></span></div>
         <div class="loader-meta font-mono"><span>Archive 01</span><span id="loader-count">000</span></div>
       </div>
@@ -102,10 +102,11 @@
           </div>
 
           <div class="notch">
+            <!-- thumbs are hidden below 900px; the blank source stops phones downloading them -->
             <div class="notch-thumbs" aria-hidden="true">
-              <img src="./img/13-sm.webp" alt="" loading="eager" />
-              <img src="./img/2-sm.webp" alt="" loading="eager" />
-              <img src="./img/12-sm.webp" alt="" loading="eager" />
+              <picture><source media="(max-width: 900px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><img src="./img/13-sm.webp" alt="" loading="eager" /></picture>
+              <picture><source media="(max-width: 900px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><img src="./img/2-sm.webp" alt="" loading="eager" /></picture>
+              <picture><source media="(max-width: 900px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><img src="./img/12-sm.webp" alt="" loading="eager" /></picture>
             </div>
             <div class="scene-switch" role="radiogroup" aria-label="Hero 3D scene">
               <button role="radio" data-scene="reel" aria-checked="true">Reel</button>

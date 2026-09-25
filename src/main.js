@@ -165,13 +165,35 @@ function hasWebGL() {
   }
 }
 
+// Data saver or a 2G link: skip the 3D scene (143 kB gzip + reel textures) and show the photo
+const conn = navigator.connection;
+const constrained = !!conn && (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || ''));
+
+// Phones: keep Three.js off the critical path. Wait for the page's own assets,
+// then for the canvas to be on screen, then for an idle moment.
+function heroReady() {
+  if (desktop()) return Promise.resolve(false);
+  const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise((r) => addEventListener('load', r, { once: true }));
+  return loaded
+    .then(() => new Promise((r) => {
+      const io = new IntersectionObserver((es) => {
+        if (es.some((e) => e.isIntersecting)) { io.disconnect(); r(); }
+      }, { rootMargin: '200px 0px' });
+      io.observe(canvas);
+    }))
+    .then(() => new Promise((r) => (window.requestIdleCallback ? requestIdleCallback(r, { timeout: 1200 }) : setTimeout(r, 200))))
+    .then(() => true);
+}
+
 async function initHero() {
-  if (!hasWebGL()) {
+  if (!hasWebGL() || constrained) {
     document.documentElement.classList.add('no-webgl');
-    $('.hero-fallback').style.backgroundImage = `url(${pieces[0].src})`;
+    $('.hero-fallback').style.backgroundImage = `url(${desktop() ? pieces[0].src : pieces[0].sm})`;
     return;
   }
+  const deferred = await heroReady();
   const { createHero } = await import('./scene.js');
+  if (deferred && !reduced) gsap.from(canvas, { opacity: 0, duration: 0.9, ease: 'power2.out' });
   hero = createHero(canvas, { images: reelImages, mode: sceneMode, reducedMotion: reduced });
 
   const panel = $('#hero-panel');
@@ -255,18 +277,28 @@ function choreography() {
   // Tapes: velocity-reactive marquee
   $$('.tape-track').forEach((track) => {
     const dir = Number(track.dataset.dir);
-    const w = track.scrollWidth / 6;
+    // Wrap distance: re-measured once webfonts swap in and on resize
+    let w = track.scrollWidth / 6;
     const x = gsap.quickSetter(track, 'x', 'px');
     let pos = dir > 0 ? -w : 0;
     let boost = 0;
+    const measure = () => {
+      w = track.scrollWidth / 6;
+      pos = Math.max(-w, Math.min(0, pos));
+    };
+    document.fonts?.ready.then(measure);
+    addEventListener('resize', measure);
     ScrollTrigger.create({ trigger: '.tapes', start: 'top bottom', end: 'bottom top', onUpdate: (st) => (boost = st.getVelocity() / 300) });
-    gsap.ticker.add((_, dt) => {
+    const tick = (_, dt) => {
       boost *= 0.92;
       pos += dir * (0.06 * dt + Math.abs(boost) * dt * 0.02);
       if (pos > 0) pos -= w;
       if (pos < -w) pos += w;
       x(pos);
-    });
+    };
+    x(pos);
+    // Only tick while this tape is on screen
+    new IntersectionObserver(([e]) => (e.isIntersecting ? gsap.ticker.add(tick) : gsap.ticker.remove(tick)), { rootMargin: '100px 0px' }).observe(track.parentElement);
   });
 
   // Overlap word + cards parallax
@@ -428,7 +460,11 @@ function choreography() {
         scrub: finePointer ? 0.7 : 0.35,
         snap: finePointer ? { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, ease: 'power2.inOut' } : false,
         invalidateOnRefresh: true,
-        onToggle: (st) => setSkip(st.isActive, '#process'),
+        onToggle: (st) => {
+          setSkip(st.isActive, '#process');
+          // Phones: promote the cards only while the flick is running
+          if (!desktop()) cards.forEach((c) => (c.style.willChange = st.isActive ? 'transform, opacity' : ''));
+        },
         onUpdate: (st) => show(Math.min(n - 1, Math.round(st.progress * (n - 1)))),
       },
     });
@@ -481,6 +517,12 @@ function interactions() {
     $$('.magnetic').forEach((el) => {
       const xTo = gsap.quickTo(el, 'x', { duration: 0.6, ease: 'expo.out' });
       const yTo = gsap.quickTo(el, 'y', { duration: 0.6, ease: 'expo.out' });
+      // will-change only while the pill is being pulled (and until it settles back)
+      let settle = null;
+      el.addEventListener('pointerenter', () => {
+        settle?.kill();
+        el.style.willChange = 'transform';
+      });
       el.addEventListener('pointermove', (e) => {
         const r = el.getBoundingClientRect();
         xTo((e.clientX - r.left - r.width / 2) * 0.25);
@@ -489,6 +531,7 @@ function interactions() {
       el.addEventListener('pointerleave', () => {
         xTo(0);
         yTo(0);
+        settle = gsap.delayedCall(0.7, () => (el.style.willChange = ''));
       });
     });
 
@@ -531,7 +574,16 @@ function interactions() {
       }
       lastX = px;
     }, { passive: true });
-    addEventListener('scroll', hitTest, { passive: true });
+    // Scroll: at most one hit-test (layout read) per frame
+    let hitQueued = false;
+    addEventListener('scroll', () => {
+      if (hitQueued || px < 0) return;
+      hitQueued = true;
+      requestAnimationFrame(() => {
+        hitQueued = false;
+        hitTest();
+      });
+    }, { passive: true });
     document.documentElement.addEventListener('pointerleave', () => {
       px = -1;
       active = null;
@@ -569,5 +621,6 @@ addEventListener('keydown', (e) => e.key === 'Escape' && closeMenu());
 initHero();
 choreography();
 interactions();
-if (document.fonts?.ready) document.fonts.ready.then(runLoader);
+// Don't hold the loader hostage to slow fonts: start after 1s regardless
+if (document.fonts?.ready) Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1000))]).then(runLoader);
 else runLoader();
