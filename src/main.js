@@ -410,8 +410,9 @@ function choreography() {
     };
 
     // cards arrive dealt onto the pile
+    // (xPercent/yPercent only, so it never fights the pinned timeline's x/y/rotation/opacity)
     gsap.from(cards, {
-      y: () => innerHeight * 0.7, rotation: (i) => 30 - i * 12, opacity: 0, duration: 1.3, ease: 'expo.out', stagger: 0.08,
+      yPercent: 110, xPercent: (i) => (i % 2 ? 24 : -24), duration: 1.3, ease: 'expo.out', stagger: 0.08,
       scrollTrigger: { trigger: '.deck', start: 'top 70%' },
     });
 
@@ -422,8 +423,10 @@ function choreography() {
         start: 'top top',
         end: () => '+=' + innerHeight * 0.75 * (n - 1),
         pin: true,
-        scrub: 0.7,
-        snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, ease: 'power2.inOut' },
+        anticipatePin: 1,
+        // Touch: snapping fights momentum scrolling and makes the pin jitter, so skip it there
+        scrub: finePointer ? 0.7 : 0.35,
+        snap: finePointer ? { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, ease: 'power2.inOut' } : false,
         invalidateOnRefresh: true,
         onToggle: (st) => setSkip(st.isActive, '#process'),
         onUpdate: (st) => show(Math.min(n - 1, Math.round(st.progress * (n - 1)))),
@@ -495,19 +498,44 @@ function interactions() {
     const fx = gsap.quickTo(float, 'x', { duration: 0.6, ease: 'expo.out' });
     const fy = gsap.quickTo(float, 'y', { duration: 0.6, ease: 'expo.out' });
     const fr = gsap.quickTo(float, 'rotate', { duration: 0.8, ease: 'expo.out' });
-    let lastX = 0;
-    $$('.step').forEach((row) => {
-      row.addEventListener('pointerenter', () => {
+    // Track the cursor globally and hit-test on scroll too, so the image
+    // shows at the cursor when wheel/trackpad scrolling brings a row under it.
+    let px = -1, py = -1, lastX = 0, active = null;
+    const place = (instant) => {
+      if (instant) gsap.set(float, { x: px - 120, y: py - 160 });
+      fx(px - 120);
+      fy(py - 160);
+    };
+    const hitTest = () => {
+      if (px < 0) return;
+      const el = document.elementFromPoint(px, py);
+      const row = el && el.closest('.step');
+      if (row === active) return;
+      const wasOn = !!active;
+      active = row;
+      if (row) {
         fimg.src = row.dataset.img;
+        if (!wasOn) place(true);
         float.classList.add('on');
-      });
-      row.addEventListener('pointerleave', () => float.classList.remove('on'));
-      row.addEventListener('pointermove', (e) => {
-        fx(e.clientX - 120);
-        fy(e.clientY - 160);
-        fr(Math.max(-12, Math.min(12, (e.clientX - lastX) * 0.8)));
-        lastX = e.clientX;
-      });
+      } else {
+        float.classList.remove('on');
+      }
+    };
+    addEventListener('pointermove', (e) => {
+      px = e.clientX;
+      py = e.clientY;
+      hitTest();
+      if (active) {
+        place(false);
+        fr(Math.max(-12, Math.min(12, (px - lastX) * 0.8)));
+      }
+      lastX = px;
+    }, { passive: true });
+    addEventListener('scroll', hitTest, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => {
+      px = -1;
+      active = null;
+      float.classList.remove('on');
     });
   }
 }

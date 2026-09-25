@@ -487,7 +487,10 @@ body::after {
   .deck-now { padding-top: 12px; gap: 14px; }
   .deck-count { font-size: 3.4rem; }
   .deck-stage { height: auto; width: min(72vw, 330px); max-height: 100%; align-self: center; }
-  .deck-card { border-width: 6px; border-radius: 22px; }
+  .deck-card {
+    border-width: 6px; border-radius: 22px; will-change: transform, opacity;
+    box-shadow: 0 24px 40px -24px rgb(0 0 0 / 0.9); /* cheaper to repaint on phones */
+  }
   .deck-card img { border-radius: 16px; }
 }
 
