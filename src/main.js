@@ -363,6 +363,38 @@ function railAutoplay() {
   };
 }
 
+// Phones: a thread draws down the step list as you scroll; each step's knot lights at the reading line
+function stepThread() {
+  const list = $('#steps');
+  if (!list) return;
+  gsap.matchMedia().add('(max-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+    list.classList.add('is-live');
+    $$('.step', list).forEach((step) => {
+      const line = $('.step-line', step);
+      const node = $('.step-node', step);
+      const img = $('.step-img', step);
+      // the tip of the drawn thread sits exactly on the reading line (55% of the viewport); offsetTop ignores the intro's y offset
+      gsap.fromTo(line, { scaleY: 0 }, {
+        scaleY: 1, ease: 'none', transformOrigin: 'top center',
+        scrollTrigger: { trigger: list, start: () => `top+=${step.offsetTop} 55%`, end: () => `top+=${step.offsetTop + step.offsetHeight} 55%`, scrub: true, refreshPriority: -1 },
+      });
+      const tag = gsap.timeline({ paused: true })
+        .fromTo(img, { rotation: -9, scale: 0.94, opacity: 0.45, transformOrigin: '0% 0%' },
+          { rotation: 0, scale: 1, opacity: 1, duration: 1.1, ease: 'elastic.out(1, 0.45)' }, 0)
+        .fromTo(node, { scale: 0.7 }, { scale: 1, duration: 0.5, ease: 'back.out(3)' }, 0);
+      const pull = gsap.fromTo(line, { scaleX: 1 }, { scaleX: 2.4, duration: 0.14, yoyo: true, repeat: 1, ease: 'power2.out', paused: true });
+      ScrollTrigger.create({
+        trigger: list, start: () => `top+=${step.offsetTop + 30} 55%`, end: 'max', refreshPriority: -1,
+        onToggle: (self) => {
+          step.classList.toggle('is-lit', self.isActive);
+          if (self.isActive) { tag.play(); pull.restart(); } else tag.reverse();
+        },
+      });
+    });
+    return () => list.classList.remove('is-live');
+  });
+}
+
 function choreography() {
   if (reduced) {
     railScrollSync();
@@ -432,6 +464,7 @@ function choreography() {
     y: 40, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.08,
     scrollTrigger: { trigger: '.steps', start: 'top 80%' },
   });
+  stepThread();
 
   // Drop: panel scales out of a curve, photos float in
   gsap.fromTo('.drop', { clipPath: 'inset(8% 6% 0% 6% round 160px 160px 32px 32px)' }, {

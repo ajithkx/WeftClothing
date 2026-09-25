@@ -591,12 +591,38 @@ body::after {
 }
 .step-float.on { opacity: 1; scale: 1; }
 .step-float img { width: 100%; height: 100%; object-fit: cover; }
+.step-track, .step-line, .step-node, .step-num { display: none; }
 @media (max-width: 900px) {
-  .step { grid-template-columns: 88px minmax(0, 1fr); grid-template-areas: 'img word' 'img text'; gap: 6px 16px; }
-  .step-img { display: block; grid-area: img; width: 88px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 14px; }
-  .step-word { grid-area: word; font-size: clamp(2.4rem, 12vw, 3.6rem); }
+  /* thread component: default is the fully drawn, all-lit static list; .is-live (set by JS) adds the scroll-driven states */
+  .steps { position: relative; --thread-x: 14px; --thread-w: 2px; --thread-glow: color-mix(in srgb, var(--color-blue) 70%, transparent); }
+  .step {
+    grid-template-columns: 84px minmax(0, 1fr); grid-template-areas: 'img num' 'img word' 'img text';
+    align-content: start; gap: 2px 14px; padding-left: 32px;
+  }
+  .step-track, .step-line {
+    display: block; position: absolute; top: 0; bottom: 0; left: calc(var(--thread-x) - var(--thread-w) / 2); width: var(--thread-w);
+  }
+  .step-track { background: var(--line); }
+  .step-line {
+    background: linear-gradient(to bottom, var(--color-blue), var(--color-cyan));
+    box-shadow: 0 0 8px var(--thread-glow); transform-origin: top center;
+  }
+  .step-node {
+    display: block; position: absolute; top: 30px; left: calc(var(--thread-x) - 7px); width: 14px; height: 14px; border-radius: 50%;
+    background: var(--color-blue); border: 2px solid var(--color-blue-pale); box-shadow: 0 0 12px var(--thread-glow);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+  .step-img { display: block; grid-area: img; width: 84px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 14px; }
+  .step-num { display: block; grid-area: num; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; color: var(--color-blue-soft); transition: color 0.3s; }
+  .step-word { grid-area: word; font-size: clamp(2.2rem, 11vw, 3.4rem); }
   .step p { grid-area: text; font-size: 14.5px; }
   .step-float { display: none; }
+  /* live: unlit steps are quiet (mute text is 6.7:1 on bg), lit steps come alive */
+  .steps.is-live .step-word { transition: color 0.4s, -webkit-text-stroke-color 0.4s; }
+  .steps.is-live .step:not(.is-lit) .step-word { color: transparent; -webkit-text-stroke: 1px var(--color-mute); }
+  .steps.is-live .step:not(.is-lit) p, .steps.is-live .step:not(.is-lit) .step-num { color: var(--color-mute); }
+  .steps.is-live .step:not(.is-lit) .step-node { background: var(--color-bg); border-color: var(--color-mute); box-shadow: none; }
+  .steps.is-live .step.is-lit p { color: var(--color-ink); }
 }
 
 /* ---------- drop ---------- */
