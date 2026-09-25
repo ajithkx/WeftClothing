@@ -337,6 +337,23 @@ body::after {
   .hero-side .pill-ghost { display: none; }
 }
 
+/* landscape phones: fit the hero in the viewport */
+@media (max-height: 500px) and (orientation: landscape) and (max-width: 1000px) {
+  .hero { padding: 6px; height: 100svh; min-height: 0; }
+  .hero-panel { --r: 22px; }
+  .sticker { display: none; }
+  .hero-copy { left: 20px; right: 20px; bottom: 56px; padding-right: 0; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
+  .hero-title { font-size: clamp(2.2rem, 6.6vw, 3.6rem); flex: none; }
+  .hero-side { position: static; width: min(56%, 420px); gap: 10px; }
+  .hero-side > div { flex-wrap: nowrap; gap: 8px; }
+  .hero-side .pill-lg { height: 48px; padding: 0 8px 0 20px; font-size: 14px; }
+  .hero-side .pill-lg:not(:has(.knob)) { padding: 0 20px; }
+  .hero-side p { display: none; }
+  .hero-side .pill-ghost { display: inline-flex; }
+  .notch-thumbs { display: none; }
+  .notch { padding: 10px 0 0 10px; }
+}
+
 /* ---------- tapes ---------- */
 .tapes { position: relative; height: clamp(150px, 16vw, 230px); margin-block: 10px; overflow: hidden; }
 .tape {
@@ -518,12 +535,23 @@ body::after {
   .deck-copy p { display: none; }
   .deck-now { padding-top: 12px; gap: 14px; }
   .deck-count { font-size: 3.4rem; }
-  .deck-stage { height: auto; width: min(72vw, 330px, calc((100svh - 300px) * 0.75)); max-height: 100%; align-self: center; }
+  .deck-stage { height: auto; width: min(72vw, 330px, max(180px, calc((100svh - 300px) * 0.75))); max-height: 100%; align-self: center; }
   .deck-card {
     border-width: 6px; border-radius: 22px; /* will-change is set from JS only while the deck is pinned */
     box-shadow: 0 24px 40px -24px rgb(0 0 0 / 0.9); /* cheaper to repaint on phones */
   }
   .deck-card img { border-radius: 16px; }
+}
+
+/* landscape phones: copy and card side by side, card sized from height alone */
+@media (max-height: 500px) and (orientation: landscape) and (max-width: 1000px) {
+  .deck-grid { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr); gap: 32px; padding-block: 16px; align-items: center; height: 100%; }
+  .deck-copy { gap: 14px; align-self: center; }
+  .deck-copy .stack-title { font-size: clamp(2.2rem, 7vw, 3.2rem); }
+  .deck-stage { width: auto; height: 100%; max-height: 100%; aspect-ratio: 3 / 4; justify-self: center; align-self: center; }
+  .deck-card { border-width: 5px; border-radius: 18px; box-shadow: 0 18px 30px -20px rgb(0 0 0 / 0.9); }
+  .deck-card img { border-radius: 13px; }
+  .deck.is-static .deck-stage { height: auto; width: 100%; aspect-ratio: auto; }
 }
 
 /* reduced motion: plain grid */
