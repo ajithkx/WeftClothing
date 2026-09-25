@@ -43,8 +43,8 @@ Every piece is one of one: found, cleaned, graded and put back into rotation. No
 
 ## Evidence on Hand
 
-- 20 product photos in `images/1.jpg`–`images/20.jpg` (flat-lays and detail close-ups).
-- Logo files in `images/logo/`.
+- 20 product photos in `public/img/1.webp` to `20.webp` (flat-lays and detail close-ups), each with a 600w `-sm` version.
+- Logo source files in `images/logo/`; the site uses copies in `public/img/`.
 - No testimonials, reviews, stats, press or customer counts. Do not fabricate them.
 
 ## Product Principles
