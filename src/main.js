@@ -630,6 +630,7 @@ function interactions() {
 
 const menu = $('#menu');
 const menuBtn = $('#menu-btn');
+const menuClose = $('#menu-close');
 let menuOpen = false;
 function closeMenu() {
   if (!menuOpen) return;
@@ -641,11 +642,12 @@ function closeMenu() {
   lenis?.start();
   menuBtn.focus();
 }
-// While the menu is open, everything behind the overlay is inert; the header keeps
-// the trigger (now the close button) reachable, and Tab cycles menu links + trigger.
+// While the menu is open, everything behind the overlay is inert (header trigger included);
+// only the menu's own close button and links are reachable; Tab cycles those.
 function setBehindMenuInert(on) {
-  $$('.skip, #main, .footer, #skip-btn, #to-top, .nav-logo, .nav-bar .pill').forEach((el) => (el.inert = on));
+  $$('.skip, #main, .footer, #skip-btn, #to-top, .nav-logo, .nav-bar .pill, #menu-btn').forEach((el) => (el.inert = on));
 }
+menuClose.addEventListener('click', closeMenu);
 menuBtn.addEventListener('click', () => {
   if (menuOpen) return closeMenu();
   menuOpen = true;
@@ -653,7 +655,7 @@ menuBtn.addEventListener('click', () => {
   menuBtn.setAttribute('aria-expanded', 'true');
   menuBtn.setAttribute('aria-label', 'Close menu');
   setBehindMenuInert(true);
-  $('#menu a')?.focus();
+  menuClose.focus();
   lenis?.stop();
   // fromTo with explicit end values: a plain from() reopened mid-tween reads the half-faded state as its target and leaves links invisible.
   if (!reduced) gsap.fromTo('#menu nav a', { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, stagger: 0.05, duration: 0.8, ease: 'expo.out', overwrite: true });
@@ -661,7 +663,7 @@ menuBtn.addEventListener('click', () => {
 addEventListener('keydown', (e) => e.key === 'Escape' && closeMenu());
 addEventListener('keydown', (e) => {
   if (!menuOpen || e.key !== 'Tab') return;
-  const ring = [menuBtn, ...$$('#menu a')];
+  const ring = [menuClose, ...$$('#menu a')];
   const i = ring.indexOf(document.activeElement);
   const next = ring[(i + (e.shiftKey ? -1 : 1) + ring.length) % ring.length];
   e.preventDefault();

@@ -22,6 +22,8 @@ Source of truth: `src/style.css` (`@theme` tokens + components), `src/scene.js` 
 | `blue-soft` | `#8FB4FF` | `.glow-blue` on `.text-blue`, footer wordmark outline (at 80% via `color-mix`), deck ghost outline (16%) |
 | `navy` | `#0F1A36` | Core of the hero panel radial gradient only |
 
+Focus ring: two-tone, global `:focus-visible`. A 2px `cyan` outline sits between two 2px `bg` bands (box-shadow 6px, outline offset 2px), so it holds on any backdrop: `bg` band vs red 5.48:1, blue 5.22:1, ink 18.13:1; cyan vs `bg` 11.55:1. Cyan alone was only 2.11:1 on red and 2.21:1 on blue. Do not override the ring per surface.
+
 Contrast: white on `red` is only 3.65:1, so small text on red is never white; it uses `on-red`. White stays only where it is large display text (drop headline, sticker "1/1", which pass the 3:1 large-text rule). Darkening the red instead was rejected: white needs `#EE0023` to reach 4.5:1, and that red falls to 4.44:1 as text on `bg`. Chips (`.chip`) sit on near-opaque `bg` at 80% so `ink` text holds AA over any photo or the blue end card (at least 10:1).
 
 Rules: red means "act" (every buy path). Blue carries identity and big fields. Cyan never fills anything bigger than a thin line or a dot. Neon = `text-shadow`/`box-shadow` glow, never gradient text.
