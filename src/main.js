@@ -152,7 +152,11 @@ function safeSet(k, v) {
 }
 function syncSwitch() {
   sw.dataset.active = sceneMode;
-  $$('button', sw).forEach((b) => b.setAttribute('aria-checked', String(b.dataset.scene === sceneMode)));
+  $$('button', sw).forEach((b) => {
+    const on = b.dataset.scene === sceneMode;
+    b.setAttribute('aria-checked', String(on));
+    b.tabIndex = on ? 0 : -1; // roving tabindex: only the checked radio is a tab stop
+  });
 }
 syncSwitch();
 
@@ -203,7 +207,8 @@ sw.addEventListener('click', (e) => {
     .to(canvas, { opacity: 1, filter: 'blur(0px)', duration: 0.8, ease: 'expo.out' });
 });
 sw.addEventListener('keydown', (e) => {
-  if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+  e.preventDefault();
   const next = sceneMode === 'reel' ? 'cloth' : 'reel';
   $(`button[data-scene="${next}"]`, sw).click();
   $(`button[data-scene="${next}"]`, sw).focus();
@@ -249,8 +254,25 @@ function runLoader() {
 
 /* ---------------- scroll choreography ---------------- */
 
+// Rail progress from native horizontal scroll (phones, and reduced motion at any width)
+function railScrollSync() {
+  const vp = $('.rail-viewport');
+  const bar = $('#rail-bar');
+  const onScroll = () => {
+    const p = vp.scrollLeft / Math.max(1, vp.scrollWidth - vp.clientWidth);
+    bar.style.transform = `scaleX(${0.08 + p * 0.92})`;
+    const n = Math.min(pieces.length, 1 + Math.round(p * (pieces.length - 1)));
+    $('#rail-count').textContent = `${String(n).padStart(2, '0')} / ${String(pieces.length).padStart(2, '0')}`;
+  };
+  vp.addEventListener('scroll', onScroll, { passive: true });
+  return () => vp.removeEventListener('scroll', onScroll);
+}
+
 function choreography() {
-  if (reduced) return;
+  if (reduced) {
+    railScrollSync();
+    return;
+  }
 
   // Tapes: velocity-reactive marquee
   $$('.tape-track').forEach((track) => {
@@ -374,20 +396,28 @@ function choreography() {
         }
       );
     });
-    return () => setSkip(false, '#details');
-  });
-  mm.add('(max-width: 900px)', () => {
+
+    // Keyboard: focusing a card scrolls the page to the point where the pin shows it centred
     const vp = $('.rail-viewport');
-    const bar = $('#rail-bar');
-    const onScroll = () => {
-      const p = vp.scrollLeft / Math.max(1, vp.scrollWidth - vp.clientWidth);
-      bar.style.transform = `scaleX(${0.08 + p * 0.92})`;
-      const n = Math.min(pieces.length, 1 + Math.round(p * (pieces.length - 1)));
-      $('#rail-count').textContent = `${String(n).padStart(2, '0')} / ${String(pieces.length).padStart(2, '0')}`;
+    const onFocus = (e) => {
+      const pc = e.target.closest('.pc');
+      const st = slide.scrollTrigger;
+      if (!pc || !st) return;
+      vp.scrollLeft = 0; // never let an implicit scroll-into-view offset the track
+      const d = dist();
+      if (!d) return;
+      const x = Math.min(d, Math.max(0, pc.offsetLeft - track.offsetLeft + pc.offsetWidth / 2 - innerWidth / 2));
+      const y = st.start + (st.end - st.start) * (x / d);
+      if (lenis) lenis.scrollTo(y, { duration: 0.6 });
+      else window.scrollTo(0, y);
     };
-    vp.addEventListener('scroll', onScroll, { passive: true });
-    return () => vp.removeEventListener('scroll', onScroll);
+    track.addEventListener('focusin', onFocus);
+    return () => {
+      track.removeEventListener('focusin', onFocus);
+      setSkip(false, '#details');
+    };
   });
+  mm.add('(max-width: 900px)', railScrollSync);
 
   // Up close: pinned deck, each scroll step flicks the top card away
   {
