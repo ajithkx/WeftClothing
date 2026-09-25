@@ -8,9 +8,35 @@
     <meta name="theme-color" content="#07080b" />
     <meta property="og:title" content="WEFT Clothing Archive 01" />
     <meta property="og:description" content="One-of-one thrifted jackets. DM us on Instagram to buy." />
-    <meta property="og:image" content="./img/13.webp" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://weftclothing.com/" />
+    <meta property="og:image" content="https://weftclothing.com/img/og-share.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Three thrifted track jackets laid flat" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WEFT Clothing Archive 01" />
+    <meta name="twitter:description" content="One-of-one thrifted jackets. DM us on Instagram to buy." />
+    <meta name="twitter:image" content="https://weftclothing.com/img/og-share.jpg" />
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+    <script>
+      // Loader failsafe: if main.js stalls or throws before clearing the loader, show the page anyway.
+      (function () {
+        function unlock() {
+          var b = document.body;
+          if (!b || !b.classList.contains('is-loading')) return;
+          b.classList.remove('is-loading');
+          var l = document.getElementById('loader');
+          if (l) l.style.display = 'none';
+          dispatchEvent(new Event('weft:unlock'));
+        }
+        setTimeout(unlock, 6000);
+        addEventListener('error', unlock);
+        addEventListener('unhandledrejection', unlock);
+      })();
+    </script>
+    <noscript><style>body.is-loading { overflow: visible !important; } #loader { display: none !important; }</style></noscript>
     <script type="module" src="/src/main.js"></script>
   </head>
   <body class="is-loading">
@@ -50,7 +76,7 @@
       </div>
     </header>
 
-    <div id="menu" class="menu" hidden>
+    <div id="menu" class="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
       <nav aria-label="Mobile">
         <a href="#archive">The rail</a>
         <a href="#details">Up close</a>

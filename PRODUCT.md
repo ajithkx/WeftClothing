@@ -25,6 +25,7 @@ Every piece is one of one: found, cleaned, graded and put back into rotation. No
 ## Operating Context
 
 - There is no store backend or checkout. All purchase intent goes to Instagram DM: https://www.instagram.com/shopweft
+- Production domain: https://weftclothing.com (used for the absolute Open Graph and Twitter card URLs in index.html).
 - Products are photographed as flat-lays on a white/cream floor, plus close-up detail shots of tags, zips and embroidery.
 - Drops happen in small "archives" (Archive 01 is current).
 
