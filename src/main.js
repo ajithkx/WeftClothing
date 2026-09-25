@@ -271,6 +271,96 @@ function railScrollSync() {
   return () => vp.removeEventListener('scroll', onScroll);
 }
 
+// Rail autoplay for the native-scroll layout: hold 3s on a card, glide to the next, loop after the last.
+// Pauses on any interaction, resumes after a quiet spell, runs only while the rail is on screen.
+function railAutoplay() {
+  const vp = $('.rail-viewport');
+  const HOLD = 3000;
+  const QUIET = 4500;
+  const SETTLE = 160;
+  let hold = 0;
+  let settle = 0;
+  let quiet = 0;
+  let touched = false; // a recent interaction
+  let hovered = false;
+  let focused = false;
+  let visible = false;
+
+  const cards = () => [...vp.querySelectorAll('.pc')];
+  const centreOf = (el) => {
+    const r = el.getBoundingClientRect();
+    const v = vp.getBoundingClientRect();
+    return vp.scrollLeft + (r.left + r.width / 2) - (v.left + v.width / 2);
+  };
+  const current = () => {
+    let best = 0;
+    let bestD = Infinity;
+    cards().forEach((c, i) => {
+      const d = Math.abs(centreOf(c) - vp.scrollLeft);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  };
+  const canRun = () => visible && !document.hidden && !touched && !hovered && !focused;
+  const stop = () => { clearTimeout(hold); clearTimeout(settle); };
+  const schedule = (ms) => {
+    clearTimeout(hold);
+    if (canRun()) hold = setTimeout(step, ms);
+  };
+  function step() {
+    if (!canRun()) return;
+    if (document.body.classList.contains('is-loading')) return schedule(500);
+    const list = cards();
+    const next = list[(current() + 1) % list.length];
+    vp.scrollTo({ left: Math.max(0, centreOf(next)), behavior: 'smooth' });
+    schedule(HOLD + 1500); // fallback if no scroll event fires; the settle timer below replaces it
+  }
+  const onScroll = () => {
+    if (touched) return bump();
+    clearTimeout(settle);
+    settle = setTimeout(() => schedule(HOLD), SETTLE); // hold starts once the glide has settled
+  };
+  function bump() {
+    touched = true;
+    stop();
+    clearTimeout(quiet);
+    quiet = setTimeout(() => { touched = false; schedule(0); }, QUIET);
+  }
+  const onEnter = (e) => { if (e.pointerType === 'mouse') { hovered = true; stop(); } };
+  const onLeave = (e) => { if (e.pointerType === 'mouse') { hovered = false; bump(); } };
+  const onFocusIn = () => { focused = true; bump(); };
+  const onFocusOut = (e) => { if (!vp.contains(e.relatedTarget)) { focused = false; bump(); } };
+  const onVis = () => (document.hidden ? stop() : schedule(HOLD));
+
+  const io = new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible) schedule(HOLD);
+    else stop();
+  }, { threshold: 0.5 });
+  io.observe(vp);
+
+  const bumps = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'wheel', 'keydown'];
+  bumps.forEach((t) => vp.addEventListener(t, bump, { passive: true }));
+  vp.addEventListener('scroll', onScroll, { passive: true });
+  vp.addEventListener('pointerenter', onEnter);
+  vp.addEventListener('pointerleave', onLeave);
+  vp.addEventListener('focusin', onFocusIn);
+  vp.addEventListener('focusout', onFocusOut);
+  document.addEventListener('visibilitychange', onVis);
+  return () => {
+    io.disconnect();
+    stop();
+    clearTimeout(quiet);
+    bumps.forEach((t) => vp.removeEventListener(t, bump));
+    vp.removeEventListener('scroll', onScroll);
+    vp.removeEventListener('pointerenter', onEnter);
+    vp.removeEventListener('pointerleave', onLeave);
+    vp.removeEventListener('focusin', onFocusIn);
+    vp.removeEventListener('focusout', onFocusOut);
+    document.removeEventListener('visibilitychange', onVis);
+  };
+}
+
 function choreography() {
   if (reduced) {
     railScrollSync();
@@ -432,7 +522,14 @@ function choreography() {
       setSkip(false, '#details');
     };
   });
-  mm.add('(max-width: 900px)', railScrollSync);
+  mm.add('(max-width: 900px)', () => {
+    const offSync = railScrollSync();
+    const offPlay = railAutoplay();
+    return () => {
+      offSync();
+      offPlay();
+    };
+  });
 
   // Up close: pinned deck, each scroll step flicks the top card away
   {
