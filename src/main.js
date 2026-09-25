@@ -224,6 +224,22 @@ function runLoader() {
     done();
     return;
   }
+  let seen = false;
+  try {
+    seen = sessionStorage.getItem('weft-loaded') === '1';
+    sessionStorage.setItem('weft-loaded', '1');
+  } catch { /* private mode */ }
+  if (seen) {
+    // Repeat visit this session: skip the full sequence, just fade out and run the intro
+    gsap.timeline()
+      .to(loader, { opacity: 0, duration: 0.4, ease: 'power1.out' })
+      .add(() => {
+        intro();
+        done();
+      }, '-=0.25')
+      .add(() => loader.remove());
+    return;
+  }
   const count = { v: 0 };
   const out = $('#loader-count');
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
@@ -362,6 +378,7 @@ function choreography() {
     const dist = () => Math.max(0, track.scrollWidth - innerWidth);
     const bar = $('#rail-bar');
     const count = $('#rail-count');
+    track.style.willChange = 'transform';
     const slide = gsap.to(track, {
       x: () => -dist(),
       ease: 'none',
@@ -411,6 +428,7 @@ function choreography() {
     track.addEventListener('focusin', onFocus);
     return () => {
       track.removeEventListener('focusin', onFocus);
+      track.style.willChange = '';
       setSkip(false, '#details');
     };
   });
@@ -562,7 +580,8 @@ function interactions() {
     addEventListener('pointermove', (e) => {
       px = e.clientX;
       py = e.clientY;
-      hitTest();
+      // Only hit-test near the process rows; elsewhere just drop the float if it was showing
+      if (active || e.target.closest?.('.steps, .step-float')) hitTest();
       if (active) {
         place(false);
         fr(Math.max(-12, Math.min(12, (px - lastX) * 0.8)));
