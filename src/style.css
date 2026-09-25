@@ -539,7 +539,7 @@ body::after {
 @media (hover: hover) and (min-width: 901px) {
   .step:hover::before { transform: scaleY(1); }
   .step:hover .step-word { transform: translateX(28px); }
-  .step:hover p { color: #fff; }
+  .step:hover p { color: var(--color-bg); } /* 5.2:1 on blue; white is 3.8:1 */
 }
 .step-float {
   position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none;
