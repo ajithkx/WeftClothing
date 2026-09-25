@@ -40,8 +40,10 @@ No eyebrows/kickers above headings. The only small label in the hero is the live
 ## Components
 
 - **Pills**: `.pill` 44px; `.pill-lg` 58px. `.pill-red` (primary, soft red glow), `.pill-ghost` (hairline), `.pill-black` (on red). Optional `.knob` circle with arrow that rotates -45° on hover. `.magnetic` pulls toward cursor.
-- **Nav**: floating rounded bar, blurred raised bg, hides on scroll down. Mobile: logo + IG icon pill + two-line menu button → full-screen menu of display-type links alternating solid/outline.
-- **Scene switch**: segmented radio (`Reel` / `Cloth`), sliding ink thumb with cyan glow; arrow keys switch.
+- **Nav**: floating rounded bar, blurred raised bg, hides on scroll down. Logo is text only ("WEFT" in display type plus small mono "CLOTHING", cyan on hover). Mobile: logo + IG icon pill + two-line menu button → full-screen menu of display-type links alternating solid/outline.
+- **Footer wordmark** (`.footer-word`): full-width outlined "WEFT" in display type sinking into a hairline; letters rise in on scroll, fill ink (T in red) on hover; filled by default on touch.
+- **Floating buttons**: round back-to-top (bottom right, after the hero) and a "Skip" pill (bottom centre) shown only while the rail or Up close deck is pinned.
+- **Scene switch**: compact pill segmented radio (`Reel` / `Cloth`), sliding ink thumb with cyan glow; arrow keys switch.
 - **Sticker**: rotating circular text around a red "1/1" disc.
 - **Tapes**: two full-bleed crossing bands (red +3°, blue -3.5°) with display caps separated by a faded slash; speed reacts to scroll velocity.
 - **Product card** (`.pc`): 3:4 photo, "1 of 1" chip (red when hot), slide-up "DM to claim" bar, name + mono type/colour + cyan "DM for price". 3D tilt + spotlight on fine pointers. Rail ends with a blue "More on the gram" card.
@@ -63,7 +65,7 @@ Easing: `expo.out` / `cubic-bezier(.16,1,.3,1)` for entrances, `cubic-bezier(.7,
 
 ## Imagery
 
-Product photos are real flat-lays, shipped as `public/img/{n}.webp` (1200w) and `{n}-sm.webp` (600w). Detail close-ups go in the Up close deck. Logo: `public/img/weft-mark.png` (wordmark, transparent) and `weft-logo.png` (with CLOTHING): use on dark only.
+Product photos are real flat-lays, shipped as `public/img/{n}.webp` (1200w) and `{n}-sm.webp` (600w). Detail close-ups go in the Up close deck. Logo: `public/img/weft-mark.png` (wordmark, transparent, used by the loader only) and `weft-logo.png` (with CLOTHING, currently unused): use on dark only. Nav and footer use text.
 
 ## Voice rules
 
