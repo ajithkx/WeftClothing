@@ -57,11 +57,13 @@ $('#deck-stage').innerHTML = details
     (d, i) => `
   <figure class="deck-card" style="--r:${tilt[i % tilt.length]}deg; z-index:${details.length - i}">
     <img src="${d.src}" srcset="${d.sm} 600w, ${d.src} 1200w" sizes="(max-width: 900px) 70vw, 34vw" alt="Close-up of the ${d.label.toLowerCase()}" loading="lazy" />
-    <figcaption class="deck-tag font-mono">${pad2(i + 1)} / ${d.label}</figcaption>
+    <figcaption class="deck-tag font-mono" aria-hidden="true">${pad2(i + 1)} / ${d.label}</figcaption>
   </figure>`
   )
   .join('');
 $('#deck-ghost').textContent = details[0].label;
+$('.deck-of').textContent = `/${pad2(details.length)}`;
+$('#rail-count').textContent = `01 / ${pad2(pieces.length)}`;
 $('#deck-name').textContent = details[0].label;
 $('#deck-sub').textContent = details[0].sub;
 if (reduced) $('.deck').classList.add('is-static');
