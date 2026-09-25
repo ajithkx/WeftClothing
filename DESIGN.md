@@ -21,6 +21,9 @@ Source of truth: `src/style.css` (`@theme` tokens + components), `src/scene.js` 
 | `blue-pale` | `#CFE0FF` | Text colour of `.glow-blue` (blue glow headline words) |
 | `blue-soft` | `#8FB4FF` | `.glow-blue` on `.text-blue`, footer wordmark outline (at 80% via `color-mix`), deck ghost outline (16%) |
 | `navy` | `#0F1A36` | Core of the hero panel radial gradient only |
+| `white` | `#FFFFFF` | Only large display text and hairlines on red or blue (drop headline, sticker "1/1", blue end card and blue tape, knob, drop photo borders) and the `pill-black` hover |
+| `black` | `#000000` | `pill-black` hover fill only |
+| `red-shade` / `red-glow` / `red-dark` | `#5A0014` / `#780014` / `#3C000A` | Warm shadow tones inside the red drop panel (corner shade, headline shadow, photo shadow) |
 
 Focus ring: two-tone, global `:focus-visible`. A 2px `cyan` outline sits between two 2px `bg` bands (box-shadow 6px, outline offset 2px), so it holds on any backdrop: `bg` band vs red 5.48:1, blue 5.22:1, ink 18.13:1; cyan vs `bg` 11.55:1. Cyan alone was only 2.11:1 on red and 2.21:1 on blue. Do not override the ring per surface.
 

@@ -18,6 +18,11 @@
   --color-blue-pale: #cfe0ff; /* glow-blue text */
   --color-blue-soft: #8fb4ff; /* glow text on blue, footer wordmark stroke */
   --color-navy: #0f1a36; /* hero panel gradient core */
+  --color-white: #fff; /* large text / hairlines on red and blue only, see DESIGN.md */
+  --color-black: #000; /* pill-black hover */
+  --color-red-shade: #5a0014; /* drop corner shade */
+  --color-red-glow: #780014; /* drop headline shadow */
+  --color-red-dark: #3c000a; /* drop photo shadow */
 
   --font-display: 'Archivo Variable', 'Arial Narrow', sans-serif;
   --font-sans: 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif;
@@ -122,9 +127,9 @@ body::after {
 .pill-ghost { border: 1px solid rgb(242 244 243 / 0.28); color: var(--color-ink); }
 .pill-ghost:hover { border-color: var(--color-ink); background: rgb(242 244 243 / 0.06); }
 .pill-black { background: var(--color-bg); color: var(--color-ink); }
-.pill-black:hover { background: #000; color: #fff; }
+.pill-black:hover { background: var(--color-black); color: var(--color-white); }
 .knob {
-  width: 40px; height: 40px; border-radius: 50%; background: #fff; color: var(--color-red);
+  width: 40px; height: 40px; border-radius: 50%; background: var(--color-white); color: var(--color-red);
   display: grid; place-items: center; transition: transform 0.5s var(--ease-snap);
 }
 .pill:hover .knob { transform: rotate(-45deg); }
@@ -308,7 +313,7 @@ body::after {
 .sticker svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 16s linear infinite; }
 .sticker text { font: 800 15.5px var(--font-sans); letter-spacing: 0.16em; fill: var(--color-ink); }
 .sticker-core {
-  width: 76px; height: 76px; border-radius: 50%; background: var(--color-red); color: #fff;
+  width: 76px; height: 76px; border-radius: 50%; background: var(--color-red); color: var(--color-white);
   display: grid; place-items: center; transform: rotate(-12deg);
   font-family: var(--font-display); font-style: italic; font-weight: 900; font-stretch: 78%; font-size: 30px;
   box-shadow: 0 0 30px rgb(255 46 77 / 0.45);
@@ -350,7 +355,7 @@ body::after {
   text-transform: uppercase; font-size: clamp(1.4rem, 2.7vw, 2.4rem); line-height: 1;
 }
 .tape-red .tape-item { color: var(--color-on-red); }
-.tape-blue .tape-item { color: #fff; }
+.tape-blue .tape-item { color: var(--color-white); }
 .tape-sep { opacity: 0.55; font-weight: 400; }
 
 /* ---------- overlap ---------- */
@@ -458,7 +463,7 @@ body::after {
 
 .pc-end .pc-card {
   display: flex; flex-direction: column; justify-content: space-between; padding: 28px;
-  background: var(--color-blue); color: #fff;
+  background: var(--color-blue); color: var(--color-white);
   box-shadow: 0 0 60px -10px rgb(61 123 255 / 0.6);
 }
 .pc-end .display { font-size: clamp(2.6rem, 3.6vw, 3.6rem); }
@@ -570,23 +575,23 @@ body::after {
 .drop-wrap { padding: 0 10px; }
 .drop {
   position: relative; overflow: hidden; border-radius: 48px 48px var(--r) var(--r);
-  background: var(--color-red); color: #fff;
+  background: var(--color-red); color: var(--color-white);
   min-height: min(92svh, 900px); display: grid; align-items: end;
   padding: clamp(28px, 5vw, 72px);
 }
 .drop::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(80% 70% at 85% 10%, rgb(255 255 255 / 0.18), transparent 60%),
-              radial-gradient(60% 60% at 0% 100%, rgb(90 0 20 / 0.5), transparent 70%);
+              radial-gradient(60% 60% at 0% 100%, color-mix(in srgb, var(--color-red-shade) 50%, transparent), transparent 70%);
 }
 .drop-copy { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 24px; max-width: 900px; }
-.drop-copy .display { font-size: clamp(3.2rem, 8.4vw, 8.6rem); color: #fff; text-shadow: 0 6px 40px rgb(120 0 20 / 0.35); }
+.drop-copy .display { font-size: clamp(3.2rem, 8.4vw, 8.6rem); color: var(--color-white); text-shadow: 0 6px 40px color-mix(in srgb, var(--color-red-glow) 35%, transparent); }
 .drop-copy p { font-size: clamp(1.05rem, 1.4vw, 1.3rem); max-width: 440px; line-height: 1.5; color: var(--color-on-red); }
 .drop-copy .pill { align-self: flex-start; }
 .drop-photos { position: absolute; right: clamp(24px, 4vw, 72px); top: clamp(30px, 5vw, 64px); width: min(40vw, 500px); height: 60%; }
 .drop-photos img {
   position: absolute; width: 44%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 22px;
-  border: 6px solid #fff; box-shadow: 0 30px 60px -18px rgb(60 0 10 / 0.6);
+  border: 6px solid var(--color-white); box-shadow: 0 30px 60px -18px color-mix(in srgb, var(--color-red-dark) 60%, transparent);
 }
 .drop-photos img:nth-child(1) { left: 0; top: 12%; rotate: -9deg; }
 .drop-photos img:nth-child(2) { left: 30%; top: 0; rotate: 4deg; z-index: 1; }
@@ -601,6 +606,12 @@ body::after {
 .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; flex-wrap: wrap; }
 .footer-cols { display: flex; gap: clamp(40px, 7vw, 110px); flex-wrap: wrap; }
 .footer-cols > div { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; font-size: 15px; }
+@media (hover: none), (max-width: 900px) {
+  /* 44px tap targets: pad the link, pull the gap back in so the stack looks the same */
+  .footer-cols > div { gap: 0; }
+  .footer-cols .ulink { display: inline-flex; align-items: center; min-height: 44px; }
+  .footer-h { margin-bottom: 0; padding-bottom: 6px; }
+}
 .footer-h { font: 500 11px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-mute); margin-bottom: 6px; }
 .footer-word {
   position: relative; display: block; margin-top: clamp(48px, 7vw, 100px);
@@ -649,6 +660,13 @@ body::after {
     .step:hover::before { opacity: 1; }
     .step:hover .step-word { transform: none; }
   }
+}
+/* reduced motion: hover feedback stays as colour/shadow/opacity, transforms are dropped */
+@media (prefers-reduced-motion: reduce) {
+  .pc:hover .pc-card img { transform: none; }
+  .ocard:hover { transform: none; }
+  .footer-word:hover .fw-letters { translate: none; }
+  .pill:hover .knob { transform: none; }
 }
 /* reduced motion on desktop: no pinned rail, so scroll it natively like the phone layout */
 @media (prefers-reduced-motion: reduce) and (min-width: 901px) {
