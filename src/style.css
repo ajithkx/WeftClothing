@@ -48,7 +48,7 @@ body {
 body.is-loading { overflow: hidden; }
 ::selection { background: var(--color-red); color: var(--color-on-red); }
 img { user-select: none; -webkit-user-drag: none; }
-:focus-visible { outline: 2px solid var(--color-cyan); outline-offset: 3px; border-radius: 6px; }
+:focus-visible { outline: 2px solid var(--color-cyan); outline-offset: 2px; border-radius: 6px; box-shadow: 0 0 0 6px var(--color-bg) !important; } /* two-tone: dark bands either side of the cyan (5.2:1 on red/blue, 18:1 on ink), cyan 11.5:1 on bg */
 
 /* film grain */
 body::after {
@@ -206,8 +206,12 @@ body::after {
 .menu-btn span { display: block; width: 16px; height: 1.5px; background: var(--color-ink); transition: transform 0.4s var(--ease-snap); }
 .menu-btn[aria-expanded='true'] span:first-child { transform: translateY(3.25px) rotate(45deg); }
 .menu-btn[aria-expanded='true'] span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+.menu-close { position: absolute; top: 18px; right: 18px; display: grid; place-content: center; gap: 5px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); }
+.menu-close span { display: block; width: 16px; height: 1.5px; background: var(--color-ink); }
+.menu-close span:first-child { transform: translateY(3.25px) rotate(45deg); }
+.menu-close span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
 .menu {
-  position: fixed; inset: 0; z-index: 95; background: var(--color-bg);
+  position: fixed; inset: 0; z-index: 101; background: var(--color-bg);
   padding: 120px var(--gutter) 40px; display: flex; flex-direction: column; justify-content: space-between;
 }
 .menu nav { display: flex; flex-direction: column; gap: 6px; }
