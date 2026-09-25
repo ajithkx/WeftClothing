@@ -52,9 +52,11 @@ export const deckHTML = () =>
 export const stepsHTML = () =>
   process
     .map(
-      (s) => `
+      (s, i) => `
   <li class="step" data-img="${s.sm}">
+    <span class="step-track" aria-hidden="true"></span><span class="step-line" aria-hidden="true"></span><span class="step-node" aria-hidden="true"></span>
     <img class="step-img" src="${s.sm}" alt="" loading="lazy" />
+    <span class="step-num" aria-hidden="true">${pad2(i + 1)}</span>
     <span class="step-word">${s.word}</span>
     <p>${s.text}</p>
   </li>`
