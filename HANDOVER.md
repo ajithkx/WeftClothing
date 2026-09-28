@@ -17,7 +17,7 @@ npm run build    # outputs dist/
 | `index.html` | All page markup, in section order |
 | `src/data.js` | Products (rail), Up close details, process steps, reel images, Instagram URL |
 | `src/main.js` | Rendering from data, Lenis smooth scroll, GSAP scroll choreography, interactions |
-| `src/scene.js` | Three.js hero: `Reel` (photo ring) and `Cloth` (shader fabric) |
+| `src/scene.js` | Three.js hero: the Reel (photo ring with neon threads) |
 | `src/style.css` | Tailwind `@theme` tokens and all component styles |
 | `public/img/` | Webp photos (`n.webp` 1200w, `n-sm.webp` 600w), logos, favicon |
 | `DESIGN.md` | Design system (colours, type, components, motion) |
@@ -25,10 +25,11 @@ npm run build    # outputs dist/
 
 ## Page order
 
-Loader, nav, 3D hero (Reel/Cloth switch), crossing tapes, overlap cards, product rail (`#archive`, pinned horizontal on desktop), Up close deck (`#details`, pinned card flick), How it drops (`#process`), Instagram drop panel (`#drop`), footer.
+Loader, nav, 3D hero (Reel), crossing tapes, overlap cards, product rail (`#archive`, pinned horizontal on desktop), Up close deck (`#details`, pinned card flick), How it drops (`#process`), Instagram drop panel (`#drop`), footer.
 
 ## Recent changes (latest first)
 
+- Hero: removed the Cloth scene and the Reel/Cloth switch; the Reel is the only hero. On phones the hero notch is hidden (it only held the desktop thumbnails).
 - Up close on touch: no scroll snap, lighter scrub, cheaper shadows; deal-in animation uses xPercent/yPercent so it never fights the pinned timeline.
 - How it drops: the floating hover image follows the cursor even when rows scroll under a still mouse.
 - Floating back-to-top button (after the hero), and a Skip button shown only while the rail or deck is pinned.

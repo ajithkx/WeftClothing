@@ -9,11 +9,9 @@ const CYAN = new THREE.Color('#4fd6e8');
 const RED = new THREE.Color('#ff2e4d');
 
 /**
- * Hero WebGL scene with two switchable worlds:
- *  - "reel":  real jacket photos on a curved ring, a blue + red thread weaving through it
- *  - "cloth": a procedural woven fabric sheet with track-jacket piping, lit by the cursor
+ * Hero WebGL scene: real jacket photos on a curved ring, a blue + red thread weaving through it
  */
-export function createHero(canvas, { images, mode = 'reel', reducedMotion = false }) {
+export function createHero(canvas, { images, reducedMotion = false }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setClearColor(0x07080b, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -66,16 +64,6 @@ export function createHero(canvas, { images, mode = 'reel', reducedMotion = fals
     if (!running) renderOnce();
   }
 
-  function setMode(next) {
-    if (world) {
-      scene.remove(world.group);
-      world.dispose();
-    }
-    world = next === 'cloth' ? buildCloth() : buildReel(textures);
-    scene.add(world.group);
-    world.layout(canvas.clientWidth, canvas.clientHeight);
-    renderOnce();
-  }
 
   function frame() {
     raf = requestAnimationFrame(frame);
@@ -114,15 +102,15 @@ export function createHero(canvas, { images, mode = 'reel', reducedMotion = fals
   const onVis = () => (document.hidden ? stop() : start());
   document.addEventListener('visibilitychange', onVis);
 
-  setMode(mode);
+  world = buildReel(textures);
+  scene.add(world.group);
+  world.layout(canvas.clientWidth, canvas.clientHeight);
   resize();
   start();
 
   return {
-    setMode,
     setPointer(x, y) {
       pointerTarget.set(x, y);
-      world?.setPointerRay?.(x, y, camera);
     },
     setScroll(p, v = 0) {
       scroll = p;
@@ -274,140 +262,6 @@ function buildReel(textures) {
         m.geometry.dispose();
         m.material.dispose();
       });
-    },
-  };
-}
-
-/* ------------------------------------------------------------------ */
-/* CLOTH: procedural twill with piping stripes, cursor-lit             */
-/* ------------------------------------------------------------------ */
-
-function buildCloth() {
-  const group = new THREE.Group();
-  const geo = new THREE.PlaneGeometry(16, 10, 220, 140);
-  const uniforms = {
-    uTime: { value: 0 },
-    uPointer: { value: new THREE.Vector2(0.5, 0.5) },
-    uPress: { value: 0 },
-    uBlue: { value: BLUE },
-    uRed: { value: RED },
-    uCyan: { value: CYAN },
-    uLight: { value: new THREE.Vector3(0, 0, 3) },
-  };
-  const mat = new THREE.ShaderMaterial({
-    uniforms,
-    side: THREE.DoubleSide,
-    vertexShader: /* glsl */ `
-      uniform float uTime; uniform vec2 uPointer; uniform float uPress;
-      varying vec2 vUv; varying vec3 vN; varying vec3 vW; varying float vH;
-      float h(vec2 uv){
-        float t = uTime;
-        float v = 0.0;
-        v += sin(uv.x*5.0 + t*0.55 + sin(uv.y*3.0 + t*0.3)*1.4) * 0.42;
-        v += sin(uv.x*11.0 - uv.y*4.0 - t*0.8) * 0.12;
-        v += sin(uv.y*7.0 + t*0.4 + uv.x*2.0) * 0.18;
-        // drape: fall off toward the bottom edge
-        v *= 0.6 + 0.6*uv.y;
-        // cursor ripple
-        float d = distance(uv*vec2(1.6,1.0), uPointer*vec2(1.6,1.0));
-        v += exp(-d*d*28.0) * (0.55 + 0.25*uPress) * sin(d*26.0 - t*4.0) * 0.6;
-        v += exp(-d*d*18.0) * 0.45;
-        return v;
-      }
-      void main(){
-        vUv = uv;
-        vec3 p = position;
-        float e = 0.004;
-        float c = h(uv);
-        float hx = h(uv+vec2(e,0.0));
-        float hy = h(uv+vec2(0.0,e));
-        p.z += c;
-        vH = c;
-        vec3 tx = normalize(vec3(16.0*e, 0.0, hx-c));
-        vec3 ty = normalize(vec3(0.0, 10.0*e, hy-c));
-        vN = normalize(normalMatrix * cross(tx, ty));
-        vec4 w = modelMatrix * vec4(p,1.0);
-        vW = w.xyz;
-        gl_Position = projectionMatrix * viewMatrix * w;
-      }`,
-    fragmentShader: /* glsl */ `
-      uniform float uTime; uniform vec3 uBlue; uniform vec3 uRed; uniform vec3 uCyan; uniform vec3 uLight; uniform vec2 uPointer;
-      varying vec2 vUv; varying vec3 vN; varying vec3 vW; varying float vH;
-      void main(){
-        // twill weave
-        vec2 q = vUv * vec2(260.0, 160.0);
-        vec2 cell = floor(q); vec2 f = fract(q);
-        float over = step(0.5, fract((cell.x + cell.y) / 4.0 + 0.001)); // 2/2 twill
-        float warp = sin(f.x*3.14159);
-        float weft = sin(f.y*3.14159);
-        float thread = mix(weft, warp, over);
-        vec3 base = mix(vec3(0.028,0.036,0.07), vec3(0.05,0.07,0.14), over);
-
-        // track-jacket piping: blue / white / red bands running across
-        float y = vUv.y;
-        float band = 0.0; vec3 bandCol = vec3(0.0);
-        float b1 = smoothstep(0.004,0.0,abs(y-0.44)-0.014);
-        float b2 = smoothstep(0.004,0.0,abs(y-0.485)-0.006);
-        float b3 = smoothstep(0.004,0.0,abs(y-0.525)-0.014);
-        bandCol = uBlue*b1 + vec3(0.85)*b2 + uRed*b3;
-        band = max(max(b1,b2),b3);
-        base = mix(base, bandCol*0.55, band);
-
-        vec3 n = normalize(vN);
-        if(!gl_FrontFacing) n = -n;
-        vec3 V = normalize(cameraPosition - vW);
-        vec3 L1 = normalize(uLight - vW);
-        vec3 L2 = normalize(vec3(6.0, -3.0, 2.0) - vW);
-        vec3 L3 = normalize(vec3(-7.0, 4.0, 1.5) - vW);
-        float dif = max(dot(n,L1),0.0);
-        // anisotropic-ish sheen along the thread direction
-        vec3 Hh = normalize(L1+V);
-        float spec = pow(max(dot(n,Hh),0.0), 40.0) * (0.35+0.65*thread);
-        float rimR = pow(1.0-max(dot(n,V),0.0), 3.0) * max(dot(n,L2),0.0);
-        float rimB = pow(max(dot(n,L3),0.0), 3.0);
-
-        vec3 col = base * (0.25 + 0.9*dif) * (0.55 + 0.45*thread);
-        col += uCyan * spec * 0.55;
-        col += uRed * rimR * 0.9;
-        col += uBlue * rimB * 0.25 * (0.6+0.4*thread);
-        col += bandCol * band * (0.25 + 0.55*dif) * (0.6+0.4*thread);
-        // fold shadows
-        col *= 0.55 + 0.45*smoothstep(-0.8, 0.6, vH);
-        gl_FragColor = vec4(col, 1.0);
-      }`,
-  });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.rotation.x = -0.95;
-  mesh.rotation.z = 0.12;
-  group.add(mesh);
-
-  const raycaster = new THREE.Raycaster();
-  const ndc = new THREE.Vector2();
-  const uvTarget = new THREE.Vector2(0.62, 0.55);
-
-  return {
-    group,
-    layout(w, h) {
-      const wide = w / h > 1.1;
-      group.position.set(wide ? 0.6 : 0, wide ? -0.2 : 0.4, wide ? 0 : -2.5);
-    },
-    setPointerRay(x, y, camera) {
-      ndc.set(x, y);
-      raycaster.setFromCamera(ndc, camera);
-      const hit = raycaster.intersectObject(mesh)[0];
-      if (hit?.uv) uvTarget.copy(hit.uv);
-    },
-    update(t, dt, { pointer, scroll, camera }) {
-      uniforms.uTime.value = t;
-      uniforms.uPointer.value.lerp(uvTarget, 1 - Math.pow(0.02, dt || 1));
-      uniforms.uLight.value.set(pointer.x * 6, pointer.y * 4 + 1.5, 3.2);
-      mesh.rotation.x = -0.95 + scroll * 0.5;
-      camera.position.set(pointer.x * 0.4, 0.4 + pointer.y * 0.25, 11 - scroll * 2.5);
-      camera.lookAt(0, 0, 0);
-    },
-    dispose() {
-      geo.dispose();
-      mat.dispose();
     },
   };
 }

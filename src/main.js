@@ -84,27 +84,7 @@ syncTop();
 /* ---------------- hero 3D ---------------- */
 
 const canvas = $('#hero-canvas');
-const sw = $('.scene-switch');
-const params = new URLSearchParams(location.search);
-let sceneMode = params.get('hero') || safeGet('weft-hero') || 'reel';
-if (!['reel', 'cloth'].includes(sceneMode)) sceneMode = 'reel';
 let hero = null;
-
-function safeGet(k) {
-  try { return localStorage.getItem(k); } catch { return null; }
-}
-function safeSet(k, v) {
-  try { localStorage.setItem(k, v); } catch { /* private mode */ }
-}
-function syncSwitch() {
-  sw.dataset.active = sceneMode;
-  $$('button', sw).forEach((b) => {
-    const on = b.dataset.scene === sceneMode;
-    b.setAttribute('aria-checked', String(on));
-    b.tabIndex = on ? 0 : -1; // roving tabindex: only the checked radio is a tab stop
-  });
-}
-syncSwitch();
 
 function hasWebGL() {
   try {
@@ -147,7 +127,7 @@ async function initHero() {
     // Phones: show the photo while the scene chunk loads, then cross-fade to the canvas
     if (deferred) showHeroFallback();
     const { createHero } = await import('./scene.js');
-    hero = createHero(canvas, { images: reelImages, mode: sceneMode, reducedMotion: reduced });
+    hero = createHero(canvas, { images: reelImages, reducedMotion: reduced });
     if (deferred) {
       const fb = $('.hero-fallback');
       const finish = () => document.documentElement.classList.remove('no-webgl');
@@ -181,27 +161,6 @@ async function initHero() {
     onUpdate: (st) => hero.setScroll(st.progress, st.getVelocity() / 12000),
   });
 }
-
-sw.addEventListener('click', (e) => {
-  const b = e.target.closest('button[data-scene]');
-  if (!b || b.dataset.scene === sceneMode) return;
-  sceneMode = b.dataset.scene;
-  safeSet('weft-hero', sceneMode);
-  syncSwitch();
-  if (!hero) return;
-  if (reduced) return hero.setMode(sceneMode);
-  gsap.timeline()
-    .to(canvas, { opacity: 0, filter: 'blur(12px)', duration: 0.35, ease: 'power2.in' })
-    .add(() => hero.setMode(sceneMode))
-    .to(canvas, { opacity: 1, filter: 'blur(0px)', duration: 0.8, ease: 'expo.out' });
-});
-sw.addEventListener('keydown', (e) => {
-  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
-  e.preventDefault();
-  const next = sceneMode === 'reel' ? 'cloth' : 'reel';
-  $(`button[data-scene="${next}"]`, sw).click();
-  $(`button[data-scene="${next}"]`, sw).focus();
-});
 
 /* ---------------- loader + intro ---------------- */
 

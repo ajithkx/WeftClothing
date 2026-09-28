@@ -284,25 +284,6 @@ body::after {
 .notch::after { left: calc(var(--nr) * -1); bottom: 0; }
 .notch-thumbs { display: flex; gap: 8px; }
 .notch-thumbs img { width: 68px; height: 84px; object-fit: cover; border-radius: 16px; filter: saturate(1.05); }
-.scene-switch {
-  position: relative; display: grid; grid-template-columns: 1fr 1fr; align-self: center;
-  padding: 3px; border-radius: 999px; background: var(--color-raised); border: 1px solid var(--line);
-  min-width: 124px;
-}
-.scene-switch button {
-  position: relative; z-index: 1; border-radius: 999px; font: 600 12px/1 var(--font-sans);
-  color: var(--color-mute); transition: color 0.3s; padding: 0 10px; min-height: 30px;
-}
-.scene-switch button[aria-checked='true'] { color: var(--color-bg); }
-/* 44px touch target without changing the 30px visual pill */
-.scene-switch button::before { content: ''; position: absolute; inset: -11px -3px -7px; } /* bottom edge is clipped by the hero panel, so grow upward */
-.scene-switch-thumb {
-  position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px);
-  border-radius: 999px; background: var(--color-ink);
-  box-shadow: 0 0 20px color-mix(in srgb, var(--color-cyan) 35%, transparent);
-  transition: transform 0.55s var(--ease-out-expo);
-}
-.scene-switch[data-active='cloth'] .scene-switch-thumb { transform: translateX(100%); }
 
 /* sticker */
 .sticker {
@@ -328,9 +309,7 @@ body::after {
   .hero-copy { left: 16px; right: 16px; bottom: 84px; padding-right: 0; flex-direction: column; align-items: flex-start; gap: 18px; }
   .hero-side { position: static; width: 100%; max-width: 420px; gap: 16px; }
   .hero-side p { font-size: 15px; }
-  .notch-thumbs { display: none; }
-  .notch { padding: 10px 0 0 10px; }
-  .scene-switch { min-width: 116px; }
+  .notch { display: none; } /* only held the thumbnails, which phones skip */
 }
 @media (max-width: 520px) {
   .hero-side .pill-ghost { display: none; }
@@ -349,8 +328,7 @@ body::after {
   .hero-side .pill-lg:not(:has(.knob)) { padding: 0 20px; }
   .hero-side p { display: none; }
   .hero-side .pill-ghost { display: inline-flex; }
-  .notch-thumbs { display: none; }
-  .notch { padding: 10px 0 0 10px; }
+  .notch { display: none; }
 }
 
 /* ---------- tapes ---------- */

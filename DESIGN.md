@@ -44,7 +44,7 @@ No eyebrows/kickers above headings. The only small label in the hero is the live
 ## Shape
 
 - Panels: 32px radius (`--r`), 26px on mobile. Drop panel: 48px top corners.
-- **Inverted-corner notch** (`.notch`): a bg-coloured block cut into a panel's bottom-right with radial-gradient inverse corners. Holds secondary controls (scene switch, thumbnails).
+- **Inverted-corner notch** (`.notch`): a bg-coloured block cut into a panel's bottom-right with radial-gradient inverse corners. Holds the hero thumbnails (desktop only; hidden on phones).
 - Cards 24–26px, tiles 28px, inner images ~18px. Pills fully round.
 - Curved reveals: tiles open from `inset(... round 120px)`, drop panel from a 160px-round inset, loader exits via ellipse clip.
 
@@ -54,7 +54,6 @@ No eyebrows/kickers above headings. The only small label in the hero is the live
 - **Nav**: floating rounded bar, near-solid raised bg (no backdrop blur, it re-sampled the WebGL hero every frame), hides on scroll down. Logo is text only ("WEFT" in display type plus small mono "CLOTHING", cyan on hover). Mobile: logo + IG icon pill + two-line menu button → full-screen menu of display-type links alternating solid/outline.
 - **Footer wordmark** (`.footer-word`): full-width outlined "WEFT" in display type sinking into a hairline; letters rise in on scroll, fill ink (T in red) on hover; filled by default on touch.
 - **Floating buttons**: round back-to-top (bottom right, after the hero) and a "Skip" pill (bottom centre) shown only while the rail or Up close deck is pinned.
-- **Scene switch**: compact pill segmented radio (`Reel` / `Cloth`), sliding ink thumb with cyan glow; arrow keys switch.
 - **Sticker**: rotating circular text around a red "1/1" disc.
 - **Tapes**: two full-bleed crossing bands (red +3°, blue -3.5°) with display caps separated by a faded slash; speed reacts to scroll velocity.
 - **Product card** (`.pc`): 3:4 photo, "1 of 1" chip (`.chip`: mono caps pill on dark glass; `.chip-red` when hot: red fill, `on-red` text, red glow), slide-up "DM to claim" bar, name + mono type/colour + cyan "DM for price". 3D tilt + spotlight on fine pointers. Rail ends with a blue "More on the gram" card.
@@ -65,9 +64,7 @@ No eyebrows/kickers above headings. The only small label in the hero is the live
 
 ## 3D hero (`src/scene.js`)
 
-Two worlds, switchable, persisted in `localStorage` (`weft-hero`) or `?hero=reel|cloth`:
-- **Reel**: 10 real product photos on bent planes around a ring, rounded-rect SDF with a thin pulsing blue/red/cyan edge, two neon tube threads weaving over/under. Cursor tilts ring and camera; scroll spins and dollies.
-- **Cloth**: 220×140 plane displaced in the vertex shader (folds + cursor ripple), 2/2 twill in the fragment shader, blue/white/red piping bands, cursor-following light, red rim light.
+One world, the **Reel**: 10 real product photos on bent planes around a ring, rounded-rect SDF with a thin pulsing blue/red/cyan edge, two neon tube threads weaving over/under. Cursor tilts ring and camera; scroll spins and dollies. (A procedural "Cloth" scene and the Reel/Cloth switch were removed on 2026-09-28.)
 
 Bloom threshold .92 so only neon edges/threads glow: photos never wash out. Renderer pauses off-screen and on hidden tabs; DPR capped 1.5–1.75. No WebGL → static photo fallback. Reduced motion → one static frame, no loader, no Lenis, no scroll choreography.
 
